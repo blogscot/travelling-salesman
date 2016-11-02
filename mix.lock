@@ -1,0 +1,2 @@
+%{"array": {:git, "https://github.com/blogscot/elixir-array.git", "474be6dc21dd5711a8430eb30e686422a813d78f", []},
+  "mylib": {:git, "https://github.com/tpoulsen/elixir-array.git", "474be6dc21dd5711a8430eb30e686422a813d78f", []}}
