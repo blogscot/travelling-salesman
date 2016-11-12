@@ -45,16 +45,19 @@ defmodule PopulationTest do
 
   test "A shuffled population contains the same individuals" do
     population_size = 69
+    test_item1 = 3333
+    test_item2 = 4444
+
     population = Population.new(population_size)
-    keys = Map.keys(population)
+
+    # inject a few test items
+    population = put_in(population[3][3], test_item1)
+    population = put_in(population[44][44], test_item2)
 
     new_population = population |> Population.shuffle
-    new_keys = new_population |> Map.keys
-    assert keys |> Enum.sort == new_keys |> Enum.sort
-    assert population |> Population.size == new_population |> Population.size
 
-    # Both populations are non-random so the contents are equivalent
-    assert population[0] == new_population[population_size-1]
+    assert population[3][3] == test_item1 && population[44][44] == test_item2
+    refute new_population[3][3] == test_item1 && new_population[44][44] == test_item2
   end
 
   test "A population has a size attribute" do
