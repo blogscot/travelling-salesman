@@ -4,7 +4,7 @@ defmodule Individual do
   Creates a new chromosome of the specified length.
   """
 
-  def new(length) do
+  def new(length) when length > 0 do
     0..length-1
     |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, x, &(&1)) end)
   end
@@ -13,7 +13,7 @@ defmodule Individual do
   Stores the gene at the specified offset in the chromosome.
   """
 
-  def setGene(chromosome, offset, gene) do
+  def setGene(chromosome, offset, gene) when is_map(chromosome) do
     Map.update(chromosome, offset, nil, &(&1=gene))
   end
 
@@ -21,7 +21,7 @@ defmodule Individual do
   Retrieves the gene at the specified offset from the chromosome
   """
 
-  def getGene(chromosome, offset) do
+  def getGene(chromosome, offset) when is_map(chromosome) do
     chromosome[offset]
   end
 
@@ -32,7 +32,7 @@ defmodule Individual do
         so it sufficient to just check the keys.
   """
 
-  def containsGene(chromosome, gene) do
+  def containsGene(chromosome, gene) when is_map(chromosome) do
     chromosome
     |> Map.has_key?(gene)
   end
@@ -41,6 +41,7 @@ defmodule Individual do
   Returns the size of the chromosome
   """
 
-  def size(chromosome), do: chromosome |> Map.to_list |> length
+  def size(chromosome) when is_map(chromosome), do:
+    chromosome |> Map.to_list |> length
 
 end
