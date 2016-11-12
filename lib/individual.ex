@@ -1,21 +1,46 @@
 defmodule Individual do
 
+  @doc """
+  Creates a new chromosome of the specified length.
+  """
+
   def new(length) do
-    for x <- 0..length-1, into: Array.new, do: x
+    0..length-1
+    |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, x, &(&1)) end)
   end
 
-  def setGene(%Array{content: _c}=chromosome, offset, gene) do
-    Array.set(chromosome, offset, gene)
+  @doc """
+  Stores the gene at the specified offset in the chromosome.
+  """
+
+  def setGene(chromosome, offset, gene) do
+    Map.update(chromosome, offset, nil, &(&1=gene))
   end
 
-  def getGene(%Array{content: _c}=chromosome, offset) do
-    Array.get(chromosome, offset)
+  @doc """
+  Retrieves the gene at the specified offset from the chromosome
+  """
+
+  def getGene(chromosome, offset) do
+    chromosome[offset]
   end
 
-  def containsGene(%Array{content: _c}=chromosome, gene) do
-    chromosome |> Enum.member?(gene)
+  @doc """
+  Returns true if the chromosome contains the specified gene.
+
+  Note: the map keys and values contain the complete list of genes
+        so it sufficient to just check the keys.
+  """
+
+  def containsGene(chromosome, gene) do
+    chromosome
+    |> Map.has_key?(gene)
   end
 
-  def size(%Array{content: _c}=chromosome), do: Array.size(chromosome)
+  @doc """
+  Returns the size of the chromosome
+  """
+
+  def size(chromosome), do: chromosome |> Map.to_list |> length
 
 end
