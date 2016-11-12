@@ -15,7 +15,7 @@ defmodule IndividualTest do
   test "A chromosome contains expected values" do
     bob = Individual.new(100)
     for x <- 0..Individual.size(bob)-1, do:
-      assert Individual.containsGene(bob, x)
+      assert Individual.containsGene?(bob, x)
   end
 
   test "A chromosome has a size attribute" do

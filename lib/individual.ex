@@ -2,6 +2,8 @@ defmodule Individual do
 
   @doc """
   Creates a new chromosome of the specified length.
+
+  City genes are in the range 0,1,2 .. number of cities -1
   """
 
   def new(length) when length > 0 do
@@ -32,7 +34,7 @@ defmodule Individual do
         so it sufficient to just check the keys.
   """
 
-  def containsGene(chromosome, gene) when is_map(chromosome) do
+  def containsGene?(chromosome, gene) when is_map(chromosome) do
     chromosome
     |> Map.has_key?(gene)
   end
