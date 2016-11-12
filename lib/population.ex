@@ -57,7 +57,7 @@ defmodule Population do
   """
 
   def size(population) when is_map(population) do
-    population |> Map.to_list |> length
+    map_size(population)
   end
 
 end

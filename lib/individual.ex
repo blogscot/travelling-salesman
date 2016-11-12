@@ -44,6 +44,6 @@ defmodule Individual do
   """
 
   def size(chromosome) when is_map(chromosome), do:
-    chromosome |> Map.to_list |> length
+    map_size(chromosome)
 
 end

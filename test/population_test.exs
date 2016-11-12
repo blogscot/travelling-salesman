@@ -43,7 +43,7 @@ defmodule PopulationTest do
     assert Individual.size(alice) == population_size  # using default chromosome length
   end
 
-  test "A shuffled population contains the same individuals" do
+  test "A shuffled population contains individuals in a different order" do
     population_size = 69
     test_item1 = 3333
     test_item2 = 4444
