@@ -2,7 +2,7 @@ defmodule Route do
 
 
   @doc """
-  Decodes the chromosome replacing each gene with the
+  Decodes the chromosome replacing each gene with
   a new city instance.
   """
 
