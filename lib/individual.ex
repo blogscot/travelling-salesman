@@ -43,7 +43,18 @@ defmodule Individual do
   Returns the size of the chromosome
   """
 
-  def size(chromosome) when is_map(chromosome), do:
-    map_size(chromosome)
+  def size(chromosome) when is_map(chromosome), do: map_size(chromosome)
+
+  @doc """
+  Shuffles the contents of the chromosome
+  """
+
+  def shuffle(chromosome) when is_map(chromosome) do
+    chromosome
+    |> Map.keys
+    |> Enum.shuffle
+    |> Enum.zip(chromosome |> Map.values)
+    |> Enum.into(%{})
+  end
 
 end
