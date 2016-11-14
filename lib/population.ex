@@ -27,17 +27,26 @@ defmodule Population do
   end
 
   @doc """
-  Returns the number of individuals in the population
+  Updates the chromosome for the given individual
   """
 
-  def setIndividual(individual, population, offset)
-      when is_map(population) and is_map(individual) do
-    Map.update(population, offset, nil, &(&1=individual))
+  def setIndividual(chromosome, population, offset)
+      when is_map(population) and is_map(chromosome) do
+    Map.update(population, offset, nil, &(&1=chromosome))
   end
 
   def getIndividual(population, offset) when is_map(population) do
     population[offset]
   end
+
+  # @doc """
+  # Finds the fittest individual in the population.
+  # If an offset is given, it finds the nth fittest individual.
+  # """
+
+  # def getFittest(population, offset \\ 0) do
+  #
+  # end
 
   @doc """
   Shuffles the population of candidate solutions.

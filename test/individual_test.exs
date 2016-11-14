@@ -7,19 +7,19 @@ defmodule IndividualTest do
   end
 
   test "A chromosome is initialised non-randomly" do
-    bob = Individual.new(100)
+    %Individual{chromosome: bob} = Individual.new(100)
     assert Individual.getGene(bob, 0) == 0
     assert Individual.getGene(bob, 99) == 99
   end
 
   test "A chromosome contains expected values" do
-    bob = Individual.new(100)
+    %Individual{chromosome: bob} = Individual.new(100)
     for x <- 0..Individual.size(bob)-1, do:
       assert Individual.containsGene?(bob, x)
   end
 
   test "A chromosome has a size attribute" do
-    bob = Individual.new(88)
+    %Individual{chromosome: bob} = Individual.new(88)
     assert Individual.size(bob) == 88
   end
 

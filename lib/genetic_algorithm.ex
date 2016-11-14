@@ -44,10 +44,15 @@ defmodule GeneticAlgorithm do
 
   def evaluate(population) when is_map(population) do
     population
-    |> Enum.map(fn {_, chromosome} ->
-      GeneticAlgorithm.calcFitness(chromosome)
+    |> Enum.map(fn {_, individual} ->
+      GeneticAlgorithm.calcFitness(individual.chromosome)
     end) |> Enum.sum
          |> Kernel./(map_size(population))
   end
+
+
+#  def mutate(population) when is_map(population) do
+#
+#  end
 
 end

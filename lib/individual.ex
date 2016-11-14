@@ -1,14 +1,19 @@
 defmodule Individual do
+  defstruct chromosome: %{}, fitness: nil
 
   @doc """
   Creates a new chromosome of the specified length.
-
   City genes are in the range 0,1,2 .. number of cities -1
+
+  Returns the chromosome with an uninitialised fitness variable
   """
 
   def new(length) when length > 0 do
-    0..length-1
-    |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, x, &(&1)) end)
+    chromosome =
+      0..length-1
+      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, x, &(&1)) end)
+
+    %Individual{chromosome: chromosome}
   end
 
   @doc """
