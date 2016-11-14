@@ -39,14 +39,22 @@ defmodule Population do
     population[offset]
   end
 
-  # @doc """
-  # Finds the fittest individual in the population.
-  # If an offset is given, it finds the nth fittest individual.
-  # """
+  @doc """
+  Finds the fittest individual in the population.
+  If an offset is given, it finds the nth fittest individual.
+  """
 
-  # def getFittest(population, offset \\ 0) do
-  #
-  # end
+  def getFittest(population, offset \\ 0) do
+    sorted_by_fitness =
+      population
+      |> Enum.sort_by(fn {_key, individual} -> individual.fitness end,
+                    &(&1>&2))
+
+    sorted_by_fitness 
+    |> Enum.drop(offset)
+    |> List.first
+
+  end
 
   @doc """
   Shuffles the population of candidate solutions.

@@ -66,4 +66,23 @@ defmodule PopulationTest do
     population = Population.new(88)
     assert Population.size(population) == 88
   end
+
+  test "A population has a fittest individual" do
+    population = Population.new(3)
+
+    # Make the individuals different
+    population = put_in(population[1].chromosome[2], 4)
+    population = put_in(population[2].chromosome[2], 8)
+
+    # Evaluate each individual's fitness
+    new_pop = GeneticAlgorithm.updateFitness(population)
+
+    assert {0, %Individual{fitness: fitness1}} = new_pop |> Population.getFittest
+    assert {2, %Individual{fitness: fitness2}} = new_pop |> Population.getFittest(1)
+    assert {1, %Individual{fitness: fitness3}} = new_pop |> Population.getFittest(2)
+
+    assert fitness1 === 0.010499504733954064
+    assert fitness2 === 0.01028730494505273
+    assert fitness3 === 0.008489805347921537
+  end
 end

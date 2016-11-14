@@ -4,13 +4,24 @@ defmodule GeneticAlgorithmTest do
   import GeneticAlgorithm
 
   test "Short distances are fitter than long distances" do
-    %Individual{chromosome: bob} = Individual.new(10)
-    %Individual{chromosome: alice} = Individual.new(20)  # Alice travels much further than bob
+    bob = Individual.new(10)
+    alice = Individual.new(20)  # Alice travels much further than bob
 
-    assert calcFitness(bob) > calcFitness(alice)
+    assert updateFitness(bob).fitness > updateFitness(alice).fitness
   end
 
-  test "A population can be evaluated" do
+  test "Update the fitness for a population" do
+    population = Population.new(2)
+
+    # Make the individuals different
+    population = put_in(population[0].chromosome[1], 2)
+
+    new_population = updateFitness(population)
+
+    refute new_population[0].fitness == new_population[1].fitness
+  end
+
+  test "Calculate the average fitness of a population (evaluation)" do
     population_of_2 = Population.new(2)
     population_of_10 = Population.new(10)
     population_of_20 = Population.new(20)

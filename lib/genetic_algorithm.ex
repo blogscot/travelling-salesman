@@ -28,15 +28,26 @@ defmodule GeneticAlgorithm do
   Calculates the fitness of a candidate solution.
   """
 
-  def calcFitness(chromosome) when is_map(chromosome) do
+  def updateFitness(%Individual{chromosome: chromosome}=individual) do
     distance =
       chromosome
       |> Route.new
       |> Route.getDistance
 
     # short distances are fitter than long distances
-    1 / distance
+    %Individual{individual | fitness:  1 / distance}
   end
+
+  @doc """
+  Updates the fitness for each pop
+  """
+
+def updateFitness(population) when is_map(population) do
+  population
+  |> Stream.map(fn {key, individual} ->
+    {key, updateFitness(individual)}
+  end) |> Enum.into(%{})
+end
 
   @doc """
   Calculates the population average fitness.
@@ -44,8 +55,9 @@ defmodule GeneticAlgorithm do
 
   def evaluate(population) when is_map(population) do
     population
-    |> Enum.map(fn {_, individual} ->
-      GeneticAlgorithm.calcFitness(individual.chromosome)
+    |> updateFitness
+    |> Stream.map(fn {_, individual} ->
+      individual.fitness
     end) |> Enum.sum
          |> Kernel./(map_size(population))
   end
