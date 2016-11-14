@@ -44,13 +44,10 @@ defmodule Population do
   If an offset is given, it finds the nth fittest individual.
   """
 
-  def getFittest(population, offset \\ 0) do
-    sorted_by_fitness =
-      population
-      |> Enum.sort_by(fn {_key, individual} -> individual.fitness end,
-                    &(&1>&2))
-
-    sorted_by_fitness 
+  def getFittest(population, offset \\ 0) when offset >= 0 do
+    population
+    |> Enum.sort_by(fn {_key, individual} -> individual.fitness end,
+                  &(&1>&2))
     |> Enum.drop(offset)
     |> List.first
 

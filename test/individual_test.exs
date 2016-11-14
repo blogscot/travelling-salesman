@@ -23,4 +23,19 @@ defmodule IndividualTest do
     assert Individual.size(bob) == 88
   end
 
+  test "A mutated chromosome with mutation rate 0 is unchanged" do
+    bob = Individual.new(10)
+
+    assert bob |> Individual.mutate(0) == bob
+  end
+
+  test "A mutated chromosome with mutation rate 1 is changed" do
+    bob = Individual.new(10)
+    mutated_bob = bob |> Individual.mutate(1)
+
+    refute mutated_bob == bob
+    assert bob.chromosome |> Map.values |> Enum.sort ==
+           mutated_bob.chromosome  |> Map.values |> Enum.sort
+  end
+
 end
