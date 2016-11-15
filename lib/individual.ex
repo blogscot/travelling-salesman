@@ -16,6 +16,14 @@ defmodule Individual do
     %Individual{chromosome: chromosome}
   end
 
+  def offspring(length) when length > 0 do
+    chromosome =
+      0..length-1
+      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, nil, &(&1)) end)
+
+    %Individual{chromosome: chromosome}
+  end
+
   @doc """
   Stores the gene at the specified offset in the chromosome.
   """
@@ -77,8 +85,7 @@ end
   """
 
   def containsGene?(chromosome, gene) when is_map(chromosome) do
-    chromosome
-    |> Map.has_key?(gene)
+    chromosome |> Map.has_key?(gene)
   end
 
   @doc """
@@ -91,12 +98,14 @@ end
   Shuffles the contents of the chromosome
   """
 
-  def shuffle(chromosome) when is_map(chromosome) do
-    chromosome
-    |> Map.keys
-    |> Enum.shuffle
-    |> Enum.zip(chromosome |> Map.values)
-    |> Enum.into(%{})
+  def shuffle(%Individual{chromosome: chromosome}=individual) do
+    %Individual{individual |
+      chromosome: chromosome
+        |> Map.keys
+        |> Enum.shuffle
+        |> Enum.zip(chromosome |> Map.values)
+        |> Enum.into(%{})
+    }
   end
 
 end

@@ -55,7 +55,8 @@ defmodule GeneticAlgorithmTest do
   test "Non-elite population members are subject to mutation" do
     elite_members = 3
     mutation_rate = 1
-    population = Population.new(elite_members+1)
+    # longer chromosomes are less likely to randomly mutate into themselves
+    population = Population.new(elite_members+1, 10)
 
     new_population = mutate(population, elite_members, mutation_rate)
     refute population == new_population

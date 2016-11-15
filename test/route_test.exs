@@ -3,10 +3,10 @@ defmodule RouteTest do
   doctest Route
 
   test "A new route contains the correct cities" do
-    %Individual{chromosome: bob} = Individual.new(100)
-    route1 = Route.new(bob)
+    bob = Individual.new(100)
+    route1 = Route.new(bob.chromosome)
     rob = bob |> Individual.shuffle
-    route2 = Route.new(rob)
+    route2 = Route.new(rob.chromosome)
 
     refute bob == rob
     # refute that the routes are the same

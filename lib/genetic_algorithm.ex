@@ -63,6 +63,67 @@ end
   end
 
   @doc """
+  Select a parent from the population using tournament selection
+  """
+
+  def selectParent(population, tournamentSize) when tournamentSize > 0 do
+    population
+    |> Population.shuffle
+    |> Enum.take(tournamentSize)
+    |> Enum.into(%{})
+    |> Population.getFittest
+  end
+
+  @doc """
+  Applies the genetic crossover operator to two parents producing a
+  single offspring.
+  """
+
+  def crossover(%Individual{chromosome: c1},
+                %Individual{chromosome: c2}, start, finish) when start <= finish do
+
+    chromosome_size = map_size(c1)
+    offspring = Individual.offspring(chromosome_size)
+
+    # Copy substring from first parent into offspring
+    offspring.chromosome
+    |> Enum.map(fn {key, value} ->
+      if key in start..finish do
+        {key, c1 |> Individual.getGene(key)}
+      else
+        {key, value}
+      end
+    end)
+
+    # 0..chromosome_size-1
+    # |> Enum.reduce(offspring.chromosome, fn key, acc ->
+    #   IO.inspect(acc)
+    #   parent2_key = rem(key + finish, chromosome_size)
+    #   parent2_gene = c2 |> Individual.getGene(parent2_key)
+    #
+    #   unless acc |> Individual.containsGene?(parent2_gene) do
+    #     # find the index of the first nil value
+    #     offspring_index = acc |> Enum.find_index(fn {_k, v} -> v == nil end)
+    #     # copy the missing value into offspring
+    #     acc |> Individual.setGene(offspring_index, parent2_gene)
+    #   else
+    #     acc
+    #   end
+    # end)
+
+  end
+
+  @doc """
+  The genetic operator crossover is applied to members of the population
+  by selecting two parents which then reproduce to create a new offspring,
+  containing genetic material from both parents.
+  """
+
+  def crossover(_population, _crossoverRate) do
+
+  end
+
+  @doc """
   Mutates members of the population according to the mutation rate.
 
   Note: the first n fittest members are allowed into the new population
@@ -72,12 +133,12 @@ end
   def mutate(population, elitismCount, mutationRate) when is_map(population) do
     sorted_population = population |> Population.sort
 
-    elite = sorted_population |> Enum.take(elitismCount) |> Enum.into(%{})
+    elite = sorted_population |> Stream.take(elitismCount) |> Enum.into(%{})
 
     non_elite =
       sorted_population
-      |> Enum.drop(elitismCount)
-      |> Enum.map(fn {key, ind} ->
+      |> Stream.drop(elitismCount)
+      |> Stream.map(fn {key, ind} ->
         {key, ind |> Individual.mutate(mutationRate)}
       end) |> Enum.into(%{})
 
