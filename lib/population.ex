@@ -27,16 +27,30 @@ defmodule Population do
   end
 
   @doc """
-  Updates the chromosome for the given individual
+  Updates the individual in a population at the given position.
   """
 
-  def setIndividual(chromosome, population, offset)
-      when is_map(population) and is_map(chromosome) do
-    Map.update(population, offset, nil, &(&1=chromosome))
+  def setIndividual(individual, population, offset)
+      when is_map(population) and is_map(individual) do
+    Map.update(population, offset, nil, &(&1=individual))
   end
+
+  @doc """
+  Returns a population member at the given offset.
+  """
 
   def getIndividual(population, offset) when is_map(population) do
     population[offset]
+  end
+
+  @doc """
+  Orders the population members according to their fitness.
+  """
+
+  def sort(population) when is_map(population) do
+    population
+    |> Enum.sort_by(fn {_key, individual} -> individual.fitness end,
+                  &(&1>&2))
   end
 
   @doc """
@@ -46,8 +60,7 @@ defmodule Population do
 
   def getFittest(population, offset \\ 0) when offset >= 0 do
     population
-    |> Enum.sort_by(fn {_key, individual} -> individual.fitness end,
-                  &(&1>&2))
+    |> sort
     |> Enum.drop(offset)
     |> List.first
 

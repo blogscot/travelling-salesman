@@ -62,9 +62,26 @@ end
          |> Kernel./(map_size(population))
   end
 
+  @doc """
+  Mutates members of the population according to the mutation rate.
 
-#  def mutate(population) when is_map(population) do
-#
-#  end
+  Note: the first n fittest members are allowed into the new population
+  without mutation, where n = elitismCount.
+  """
+
+  def mutate(population, elitismCount, mutationRate) when is_map(population) do
+    sorted_population = population |> Population.sort
+
+    elite = sorted_population |> Enum.take(elitismCount) |> Enum.into(%{})
+
+    non_elite =
+      sorted_population
+      |> Enum.drop(elitismCount)
+      |> Enum.map(fn {key, ind} ->
+        {key, ind |> Individual.mutate(mutationRate)}
+      end) |> Enum.into(%{})
+
+    Map.merge(elite, non_elite)
+  end
 
 end

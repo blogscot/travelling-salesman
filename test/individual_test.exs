@@ -35,7 +35,7 @@ defmodule IndividualTest do
 
     refute mutated_bob == bob
     assert bob.chromosome |> Map.values |> Enum.sort ==
-           mutated_bob.chromosome  |> Map.values |> Enum.sort
+           mutated_bob.chromosome |> Map.values |> Enum.sort
   end
 
 end

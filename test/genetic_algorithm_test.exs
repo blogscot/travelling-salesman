@@ -33,4 +33,41 @@ defmodule GeneticAlgorithmTest do
     assert evaluate(population_of_20) == 0.0012562399661038138
   end
 
+  test "Elite population members are not subject to mutation" do
+    elite_members = 3
+    mutation_rate = 1
+    population = Population.new(elite_members)
+
+    new_population = mutate(population, elite_members, mutation_rate)
+    assert population == new_population
+  end
+
+  test "All population members are subject to mutation" do
+    elite_members = 0
+    mutation_rate = 1
+    population = Population.new(100)
+
+    new_population = mutate(population, elite_members, mutation_rate)
+    for index <- 0..99, do:
+      refute population[index] == new_population[index]
+  end
+
+  test "Non-elite population members are subject to mutation" do
+    elite_members = 3
+    mutation_rate = 1
+    population = Population.new(elite_members+1)
+
+    new_population = mutate(population, elite_members, mutation_rate)
+    refute population == new_population
+  end
+
+  test "Population members are not mutated when rate is 0" do
+    elite_members = 0
+    mutation_rate = 0
+    population = Population.new(100)
+
+    new_population = mutate(population, elite_members, mutation_rate)
+    assert population == new_population
+  end
+
 end
