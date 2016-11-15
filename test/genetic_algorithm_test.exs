@@ -71,4 +71,18 @@ defmodule GeneticAlgorithmTest do
     assert population == new_population
   end
 
+  test "Ordered crossover takes genes from both parent chromosomes" do
+    parent1 = %Individual{chromosome: %{0 => 2, 1 => 1, 2 => 7, 3 => 9, 4 => 5,
+    5 => 6, 6 => 4, 7 => 3, 8 => 0, 9 => 8}, fitness: nil}
+   parent2 = %Individual{chromosome: %{0 => 0, 1 => 7, 2 => 3, 3 => 9, 4 => 1,
+   5 => 4, 6 => 5, 7 => 2, 8 => 6, 9 => 8}, fitness: nil}
+   offspring_chromosome = %{0 => 2, 1 => 8, 2 => 0, 3 => 9, 4 => 5, 5 => 6,
+   6 => 4, 7 => 7, 8 => 3, 9 => 1}
+
+   # Substring from parent1, plus ordered genes from parent2
+   # [_, _, _, 9, 5, 6, 4, _, _, _] from parent1
+   # (2, not 6, 8, 0, 7, 3, 1) from parent2
+   assert crossover(parent1, parent2, 3, 6) == offspring_chromosome
+  end
+
 end

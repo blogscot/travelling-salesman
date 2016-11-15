@@ -86,30 +86,30 @@ end
     offspring = Individual.offspring(chromosome_size)
 
     # Copy substring from first parent into offspring
-    offspring.chromosome
-    |> Enum.map(fn {key, value} ->
-      if key in start..finish do
-        {key, c1 |> Individual.getGene(key)}
+    offspring=
+      offspring.chromosome
+      |> Enum.map(fn {key, value} ->
+        if key in start..finish do
+          {key, c1 |> Individual.getGene(key)}
+        else
+          {key, value}
+        end
+      end) |> Enum.into(%{})
+
+    0..chromosome_size-1
+    |> Enum.reduce(offspring, fn key, acc ->
+      parent2_key = rem(key + finish, chromosome_size)
+      parent2_gene = c2 |> Individual.getGene(parent2_key)
+
+      if acc |> Individual.containsGene?(parent2_gene) do
+        acc
       else
-        {key, value}
+        # find the index of the first nil value
+        offspring_index = acc |> Enum.find_index(fn {_k, v} -> v == nil end)
+        # copy the missing value into offspring
+        acc |> Individual.setGene(offspring_index, parent2_gene)
       end
     end)
-
-    # 0..chromosome_size-1
-    # |> Enum.reduce(offspring.chromosome, fn key, acc ->
-    #   IO.inspect(acc)
-    #   parent2_key = rem(key + finish, chromosome_size)
-    #   parent2_gene = c2 |> Individual.getGene(parent2_key)
-    #
-    #   unless acc |> Individual.containsGene?(parent2_gene) do
-    #     # find the index of the first nil value
-    #     offspring_index = acc |> Enum.find_index(fn {_k, v} -> v == nil end)
-    #     # copy the missing value into offspring
-    #     acc |> Individual.setGene(offspring_index, parent2_gene)
-    #   else
-    #     acc
-    #   end
-    # end)
 
   end
 
