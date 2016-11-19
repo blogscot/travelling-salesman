@@ -20,7 +20,7 @@ defmodule Individual do
   Stores the gene at the specified offset in the chromosome.
   """
 
-  def setGene(chromosome, offset, gene) when is_map(chromosome) do
+  def setGene(%{}=chromosome, offset, gene) do
     Map.update(chromosome, offset, nil, &(&1=gene))
   end
 
@@ -28,7 +28,7 @@ defmodule Individual do
   Retrieves the gene at the specified offset from the chromosome
   """
 
-  def getGene(chromosome, offset) when is_map(chromosome) do
+  def getGene(%{}=chromosome, offset) do
     chromosome[offset]
   end
 
@@ -36,7 +36,7 @@ defmodule Individual do
   Swap the genes at the given positions.
   """
 
-def swapGenes(chromosome, pos1, pos2) when is_map(chromosome) do
+def swapGenes(%{}=chromosome, pos1, pos2) do
   tmp = chromosome |> getGene(pos1)
 
   chromosome
@@ -73,7 +73,7 @@ end
   Returns true if the chromosome contains the specified gene.
   """
 
-  def containsGene?(chromosome, gene) when is_map(chromosome) do
+  def containsGene?(%{}=chromosome, gene) do
     chromosome |> Enum.find_value(fn {_k, v} -> v == gene end)
   end
 

@@ -29,8 +29,7 @@ defmodule Population do
   Updates the individual in a population at the given position.
   """
 
-  def setIndividual(individual, population, offset)
-      when is_map(population) and is_map(individual) do
+  def setIndividual(%{}=individual, %{}=population, offset) do
     Map.update(population, offset, nil, &(&1=individual))
   end
 
@@ -38,7 +37,7 @@ defmodule Population do
   Returns a population member at the given offset.
   """
 
-  def getIndividual(population, offset) when is_map(population) do
+  def getIndividual(%{}=population, offset) do
     population[offset]
   end
 
@@ -46,7 +45,7 @@ defmodule Population do
   Orders the population members according to their fitness.
   """
 
-  def sort(population) when is_map(population) do
+  def sort(%{}=population) do
     population
     |> Enum.sort_by(fn {_key, individual} -> individual.fitness end,
                   &(&1>&2))
@@ -57,7 +56,7 @@ defmodule Population do
   If an offset is given, it finds the nth fittest individual.
   """
 
-  def getFittest(population, offset \\ 0) when offset >= 0 do
+  def getFittest(%{}=population, offset \\ 0) when offset >= 0 do
     population
     |> sort
     |> Enum.drop(offset)
@@ -69,7 +68,7 @@ defmodule Population do
   Note: the chromosome contents remain untouched.
   """
 
-  def shuffle(population) do
+  def shuffle(%{}=population) do
     population
     |> Map.keys
     |> Enum.shuffle

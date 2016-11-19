@@ -42,7 +42,7 @@ defmodule GeneticAlgorithm do
   Updates the fitness for each member of the population.
   """
 
-def updateFitness(population) when is_map(population) do
+def updateFitness(%{}=population) do
   population
   |> Stream.map(fn {key, individual} ->
     {key, updateFitness(individual)}
@@ -53,7 +53,7 @@ end
   Calculates the population average fitness.
   """
 
-  def evaluate(population) when is_map(population) do
+  def evaluate(%{}=population) do
     population
     |> updateFitness
     |> Stream.map(fn {_, individual} ->
@@ -66,7 +66,7 @@ end
   Select a parent from the population using tournament selection.
   """
 
-  def selectParent(population, tournamentSize) when tournamentSize > 0 do
+  def selectParent(%{}=population, tournamentSize) when tournamentSize > 0 do
     population
     |> Population.shuffle
     |> Enum.take(tournamentSize)
@@ -121,8 +121,7 @@ end
   containing genetic material from both parents.
   """
 
-  def crossover(population, crossoverRate, elitismCount, tournamentSize)
-    when is_map(population) do
+  def crossover(%{}=population, crossoverRate, elitismCount, tournamentSize) do
     sorted_population = population |> Population.sort
 
     elite_population =
@@ -164,7 +163,7 @@ end
   without mutation, where n = elitismCount.
   """
 
-  def mutate(population, elitismCount, mutationRate) when is_map(population) do
+  def mutate(%{}=population, elitismCount, mutationRate) do
     sorted_population = population |> Population.sort
 
     elite = sorted_population |> Stream.take(elitismCount) |> Enum.into(%{})
