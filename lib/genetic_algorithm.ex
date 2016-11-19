@@ -39,7 +39,7 @@ defmodule GeneticAlgorithm do
   end
 
   @doc """
-  Updates the fitness for each pop
+  Updates the fitness for each member of the population.
   """
 
 def updateFitness(population) when is_map(population) do
@@ -63,7 +63,7 @@ end
   end
 
   @doc """
-  Select a parent from the population using tournament selection
+  Select a parent from the population using tournament selection.
   """
 
   def selectParent(population, tournamentSize) when tournamentSize > 0 do
@@ -72,6 +72,7 @@ end
     |> Enum.take(tournamentSize)
     |> Enum.into(%{})
     |> Population.getFittest
+    |> (fn {_key, parent} -> parent end).()
   end
 
   @doc """
@@ -96,21 +97,22 @@ end
         end
       end) |> Enum.into(%{})
 
-    0..chromosome_size-1
-    |> Enum.reduce(offspring, fn key, acc ->
-      parent2_key = rem(key + finish, chromosome_size)
-      parent2_gene = c2 |> Individual.getGene(parent2_key)
+    offspring_chromosome =
+      0..chromosome_size-1
+      |> Enum.reduce(offspring, fn key, acc ->
+        parent2_key = rem(key + finish, chromosome_size)
+        parent2_gene = c2 |> Individual.getGene(parent2_key)
 
-      if acc |> Individual.containsGene?(parent2_gene) do
-        acc
-      else
-        # find the index of the first nil value
-        offspring_index = acc |> Enum.find_index(fn {_k, v} -> v == nil end)
-        # copy the missing value into offspring
-        acc |> Individual.setGene(offspring_index, parent2_gene)
-      end
-    end)
-
+        if acc |> Individual.containsGene?(parent2_gene) do
+          acc
+        else
+          # find the index of the first nil value
+          offspring_index = acc |> Enum.find_index(fn {_k, v} -> v == nil end)
+          # copy the missing value into offspring
+          acc |> Individual.setGene(offspring_index, parent2_gene)
+        end
+      end)
+      %Individual{chromosome: offspring_chromosome}
   end
 
   @doc """
@@ -119,8 +121,40 @@ end
   containing genetic material from both parents.
   """
 
-  def crossover(_population, _crossoverRate) do
+  def crossover(population, crossoverRate, elitismCount, tournamentSize)
+    when is_map(population) do
+    sorted_population = population |> Population.sort
 
+    elite_population =
+      sorted_population
+      |> Enum.take(elitismCount)
+      |> Enum.into(%{})
+
+    chromosome_size =
+      population
+      |> Population.getIndividual(0)
+      |> (fn ind -> map_size(ind.chromosome) end).()
+
+    crossover_population =
+      sorted_population
+      |> Enum.drop(elitismCount)
+      |> Enum.map(fn {key, parent1} ->
+        if crossoverRate > :rand.uniform do
+          parent2 = selectParent(population, tournamentSize)
+
+          {start, finish} =
+            Enum.min_max([:rand.uniform(chromosome_size)-1,
+                          :rand.uniform(chromosome_size)-1])
+
+          # Create offspring
+          offspring = crossover(parent1, parent2, start, finish)
+          {key, offspring}
+        else
+          {key, parent1}
+        end
+      end) |> Enum.into(%{})
+
+    Map.merge(elite_population, crossover_population)
   end
 
   @doc """
