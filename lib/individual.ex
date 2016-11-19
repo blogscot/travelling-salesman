@@ -9,19 +9,11 @@ defmodule Individual do
   """
 
   def new(length) when length > 0 do
-    chromosome =
-      0..length-1
-      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, x, &(&1)) end)
-
-    %Individual{chromosome: chromosome}
+    %Individual{chromosome: Enum.into(0..length-1, %{}, fn x -> {x, x} end)}
   end
 
   def offspring(length) when length > 0 do
-    chromosome =
-      0..length-1
-      |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, nil, &(&1)) end)
-
-    %Individual{chromosome: chromosome}
+    %Individual{chromosome: Enum.into(0..length-1, %{}, fn x -> {x, nil} end)}
   end
 
   @doc """
