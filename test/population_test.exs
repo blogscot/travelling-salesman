@@ -62,11 +62,6 @@ defmodule PopulationTest do
            new_population[44].chromosome[44] == test_item2
   end
 
-  test "A population has a size attribute" do
-    population = Population.new(88)
-    assert Population.size(population) == 88
-  end
-
   test "A population has a fittest individual" do
     population = Population.new(3)
 

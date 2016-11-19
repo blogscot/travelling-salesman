@@ -22,8 +22,7 @@ defmodule Population do
   def new(population_size, chromosome_length)
     when population_size > 0 and chromosome_length > 0 do
     0..population_size-1
-    |> Enum.reduce(%{},
-        fn x, acc -> Map.update(acc, x, Individual.new(chromosome_length), &(&1)) end)
+    |> Enum.into(%{}, fn x -> {x, Individual.new(chromosome_length)} end)
   end
 
   @doc """
@@ -63,7 +62,6 @@ defmodule Population do
     |> sort
     |> Enum.drop(offset)
     |> List.first
-
   end
 
   @doc """
@@ -77,14 +75,6 @@ defmodule Population do
     |> Enum.shuffle
     |> Enum.zip(population |> Map.values)
     |> Enum.into(%{})
-  end
-
-  @doc """
-  Returns the size of the population
-  """
-
-  def size(population) when is_map(population) do
-    map_size(population)
   end
 
 end
