@@ -1,7 +1,8 @@
 defmodule GeneticAlgorithm do
 
   @moduledoc """
-  Contains the genetic operators for the Travelling Salesman problem
+  Contains the genetic operators for the Travelling Salesman problem,
+  evaluate, crossover and mutate.
   """
 
 
@@ -97,6 +98,7 @@ end
         end
       end) |> Enum.into(%{})
 
+    # Map remaining genes (in order) from parent2 into offspring
     offspring_chromosome =
       0..chromosome_size-1
       |> Enum.reduce(offspring, fn key, acc ->
@@ -126,7 +128,7 @@ end
 
     elite_population =
       sorted_population
-      |> Enum.take(elitismCount)
+      |> Stream.take(elitismCount)
       |> Enum.into(%{})
 
     chromosome_size =
@@ -136,7 +138,7 @@ end
 
     crossover_population =
       sorted_population
-      |> Enum.drop(elitismCount)
+      |> Stream.drop(elitismCount)
       |> Enum.map(fn {key, parent1} ->
         if crossoverRate > :rand.uniform do
           parent2 = selectParent(population, tournamentSize)

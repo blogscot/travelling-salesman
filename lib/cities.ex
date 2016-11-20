@@ -1,6 +1,7 @@
 defmodule Cities do
   @moduledoc """
-  Contains the city position, stored as x, y grid positions
+  Contains a fixed list of city positions, stored as x, y grid positions, used
+  for performance testing purposes.
   """
 
   @coordinates [{10,4}, {39,73}, {59,77}, {30,65}, {77,53}, {85,33}, {55,32}, {9,35}, {29,53}, {1,79},

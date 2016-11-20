@@ -1,12 +1,15 @@
 defmodule Route do
 
+  @moduledoc """
+  Each Route is a possible path through the list of cities.
+  """
 
   @doc """
   Decodes the chromosome replacing each gene with
   a new city instance.
   """
 
-  def new(chromosome) when is_map(chromosome) do
+  def new(%{}=chromosome) do
     for gene <- chromosome do
       Cities.get_cities[elem(gene, 1)]
       |> City.new

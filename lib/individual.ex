@@ -1,6 +1,12 @@
 defmodule Individual do
   defstruct chromosome: %{}, fitness: nil
 
+  @moduledoc """
+  An Individual represents a possible candidate solution represented
+  by a chromosome which is an ordered route through a list of cities.
+  The suitability of the solution is given by its fitness value.
+  """
+
   @doc """
   Creates a new chromosome of the specified length.
   City genes are in the range 0,1,2 .. number of cities -1

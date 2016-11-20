@@ -59,8 +59,7 @@ defmodule Population do
   def getFittest(%{}=population, offset \\ 0) when offset >= 0 do
     population
     |> sort
-    |> Enum.drop(offset)
-    |> List.first
+    |> Enum.at(offset)
   end
 
   @doc """
