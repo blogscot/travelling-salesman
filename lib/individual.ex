@@ -84,12 +84,6 @@ end
   end
 
   @doc """
-  Returns the size of the chromosome
-  """
-
-  def size(chromosome) when is_map(chromosome), do: map_size(chromosome)
-
-  @doc """
   Shuffles the contents of the chromosome
   """
 

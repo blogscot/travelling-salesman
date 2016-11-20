@@ -14,8 +14,19 @@ defmodule IndividualTest do
 
   test "A chromosome contains expected values" do
     %Individual{chromosome: bob} = Individual.new(100)
-    for x <- 0..Individual.size(bob)-1, do:
+    for x <- 0..map_size(bob)-1, do:
       assert Individual.containsGene?(bob, x)
+  end
+
+  test "An chromosome can have its genes updated" do
+    %Individual{chromosome: bob} = Individual.new(100)
+
+    for offset <- 0..map_size(bob)-1 do
+      new_bob = bob |> Individual.setGene(offset, 1)
+      
+      assert bob |> Individual.getGene(offset) == offset
+      assert new_bob |> Individual.getGene(offset) == 1
+    end
   end
 
   test "A chromosome only contains expected values" do
@@ -25,11 +36,6 @@ defmodule IndividualTest do
     assert Individual.containsGene?(bob, 9)
     refute Individual.containsGene?(bob, 10)
     refute Individual.containsGene?(bob, 33)
-  end
-
-  test "A chromosome has a size attribute" do
-    %Individual{chromosome: bob} = Individual.new(88)
-    assert Individual.size(bob) == 88
   end
 
   test "A mutated chromosome with mutation rate 0 is unchanged" do
