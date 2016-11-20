@@ -55,45 +55,61 @@ end
     |> Population.getFittest
   end
 
+
+  @doc """
+  """
+
+  def insertGenes(%{}=offspring, %{}=parent2, finish) do
+    chromosome_size = map_size(parent2)
+
+    0..chromosome_size-1
+    |> Enum.reduce(offspring, fn key, acc ->
+      # IO.inspect("Acc: #{inspect acc}")
+      parent2_key = rem(key + finish, chromosome_size)
+      parent2_gene = parent2 |> Individual.getGene(parent2_key)
+
+      # IO.write("#{parent2_gene} ")
+      if acc |> Individual.containsGene?(parent2_gene) do
+        acc
+      else
+        # find the index of the first nil value
+        offspring_index = acc |> Enum.find_index(fn {_k, v} -> v == nil end)
+        # IO.write("#{offspring_index} ")
+        # copy the missing value into offspring
+        acc |> Individual.setGene(offspring_index, parent2_gene)
+      end
+    end)
+  end
+
   @doc """
   Applies the genetic crossover operator to two parents producing a
   single offspring.
   """
 
+  def createOffspring(%{}=parent1, start, finish) do
+    offspring = Individual.offspring(map_size(parent1))
+
+    offspring.chromosome
+    |> Enum.map(fn {key, value} ->
+      if key in start..finish do
+        {key, parent1 |> Individual.getGene(key)}
+      else
+        {key, value}
+      end
+    end) |> Enum.into(%{})
+  end
+
   def crossover(%Individual{chromosome: c1},
                 %Individual{chromosome: c2}, start, finish) when start <= finish do
 
-    chromosome_size = map_size(c1)
-    offspring = Individual.offspring(chromosome_size)
-
     # Copy substring from first parent into offspring
-    offspring=
-      offspring.chromosome
-      |> Enum.map(fn {key, value} ->
-        if key in start..finish do
-          {key, c1 |> Individual.getGene(key)}
-        else
-          {key, value}
-        end
-      end) |> Enum.into(%{})
+    offspring = createOffspring(c1, start, finish)
 
-    # Map remaining genes (in order) from parent2 into offspring
-    offspring_chromosome =
-      0..chromosome_size-1
-      |> Enum.reduce(offspring, fn key, acc ->
-        parent2_key = rem(key + finish, chromosome_size)
-        parent2_gene = c2 |> Individual.getGene(parent2_key)
+    # Insert remaining genes (in order) from parent2 into offspring
+    offspring_chromosome = insertGenes(offspring, c2, finish)
 
-        if acc |> Individual.containsGene?(parent2_gene) do
-          acc
-        else
-          # find the index of the first nil value
-          offspring_index = acc |> Enum.find_index(fn {_k, v} -> v == nil end)
-          # copy the missing value into offspring
-          acc |> Individual.setGene(offspring_index, parent2_gene)
-        end
-      end)
-      %Individual{chromosome: offspring_chromosome}
+    # IO.inspect("Offspring2 #{inspect offspring_chromosome}, #{start}, #{finish}")
+    %Individual{chromosome: offspring_chromosome}
   end
 
   @doc """
