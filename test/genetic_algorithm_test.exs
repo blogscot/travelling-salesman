@@ -70,13 +70,51 @@ defmodule GeneticAlgorithmTest do
     assert population == new_population
   end
 
+  test "Offspring inherits genes from directly from its first parent" do
+    parent1 = Individual.new(10)
+    offspring1 = %{0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6,
+    7 => 7, 8 => 8, 9 => 9}
+    offspring2 = %{0 => nil, 1 => nil, 2 => nil, 3 => 3, 4 => 4, 5 => 5, 6 => 6,
+    7 => 7, 8 => 8, 9 => nil}
+    offspring3 = %{0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => nil, 5 => nil, 6 => nil,
+    7 => nil, 8 => nil, 9 => nil}
+    offspring4 = %{0 => nil, 1 => nil, 2 => nil, 3 => nil, 4 => 4, 5 => nil,
+    6 => nil, 7 => nil, 8 => nil, 9 => nil}
+
+    assert createOffspring(parent1.chromosome, 0, 9) == offspring1
+    assert createOffspring(parent1.chromosome, 3, 8) == offspring2
+    assert createOffspring(parent1.chromosome, 0, 3) == offspring3
+    assert createOffspring(parent1.chromosome, 0, 3) == offspring3
+    assert createOffspring(parent1.chromosome, 4, 4) == offspring4
+  end
+
+  test "Offspring inherit genes in an ordered mapping from its second parent" do
+    parent2 = %{0 => 9, 1 => 8, 2 => 7, 3 => 6, 4 => 5, 5 => 4, 6 => 3,
+    7 => 2, 8 => 1, 9 => 0}
+    offspring1 = %{0 => nil, 1 => nil, 2 => nil, 3 => 3, 4 => 4, 5 => 5, 6 => 6,
+    7 => 7, 8 => 8, 9 => nil}   # 3 to 8
+    result1 = %{0 => 0, 1 => 9, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6,
+    7 => 7, 8 => 8, 9 => 1}
+
+    # 9, not 8,7,6,5,4,3, 2, 1, 0
+    assert insertGenes(offspring1, parent2, 8) == result1
+
+    offspring2 = %{0 => nil, 1 => nil, 2 => nil, 3 => nil, 4 => nil, 5 => nil,
+    6 => nil, 7 => nil, 8 => nil, 9 => 3}   # 9
+    result2 = %{0 => 9, 1 => 8, 2 => 7, 3 => 6, 4 => 5, 5 => 4, 6 => 2,
+    7 => 1, 8 => 0, 9 => 3}
+
+    #
+    assert insertGenes(offspring2, parent2, 9) == result2
+  end
+
   test "Ordered crossover takes genes from both parent chromosomes" do
     parent1 = %Individual{chromosome: %{0 => 2, 1 => 1, 2 => 7, 3 => 9, 4 => 5,
     5 => 6, 6 => 4, 7 => 3, 8 => 0, 9 => 8}, fitness: nil}
-   parent2 = %Individual{chromosome: %{0 => 0, 1 => 7, 2 => 3, 3 => 9, 4 => 1,
-   5 => 4, 6 => 5, 7 => 2, 8 => 6, 9 => 8}, fitness: nil}
-   offspring = %Individual{chromosome: %{0 => 2, 1 => 8, 2 => 0, 3 => 9, 4 => 5, 5 => 6,
-   6 => 4, 7 => 7, 8 => 3, 9 => 1}, fitness: nil}
+    parent2 = %Individual{chromosome: %{0 => 0, 1 => 7, 2 => 3, 3 => 9, 4 => 1,
+    5 => 4, 6 => 5, 7 => 2, 8 => 6, 9 => 8}, fitness: nil}
+    offspring = %Individual{chromosome: %{0 => 2, 1 => 8, 2 => 0, 3 => 9, 4 => 5,
+    5 => 6, 6 => 4, 7 => 7, 8 => 3, 9 => 1}, fitness: nil}
 
    # Substring from parent1, plus ordered genes from parent2
    # [_, _, _, 9, 5, 6, 4, _, _, _] from parent1

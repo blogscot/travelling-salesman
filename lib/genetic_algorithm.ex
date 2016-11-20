@@ -55,8 +55,11 @@ end
     |> Population.getFittest
   end
 
-
   @doc """
+  Inserts genes from parent2 into the partial offspring retaining the gene
+  ordering in parent2 (ordered crossover).
+
+  finish  the last gene position in offspring taken from parent1.
   """
 
   def insertGenes(%{}=offspring, %{}=parent2, finish) do
@@ -65,7 +68,7 @@ end
     0..chromosome_size-1
     |> Enum.reduce(offspring, fn key, acc ->
       # IO.inspect("Acc: #{inspect acc}")
-      parent2_key = rem(key + finish, chromosome_size)
+      parent2_key = rem(key + finish + 1, chromosome_size)
       parent2_gene = parent2 |> Individual.getGene(parent2_key)
 
       # IO.write("#{parent2_gene} ")
@@ -82,8 +85,8 @@ end
   end
 
   @doc """
-  Applies the genetic crossover operator to two parents producing a
-  single offspring.
+  Create a partial offspring chromosome using genes from the first parent
+  using the given start and finish indices.
   """
 
   def createOffspring(%{}=parent1, start, finish) do
@@ -98,6 +101,11 @@ end
       end
     end) |> Enum.into(%{})
   end
+
+  @doc """
+  Applies the genetic crossover operator to two parents producing a
+  single offspring.
+  """
 
   def crossover(%Individual{chromosome: c1},
                 %Individual{chromosome: c2}, start, finish) when start <= finish do
