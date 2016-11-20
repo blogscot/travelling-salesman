@@ -60,6 +60,7 @@ defmodule Population do
     population
     |> sort
     |> Enum.at(offset)
+    |> (fn {_key, individual} -> individual end).()
   end
 
   @doc """

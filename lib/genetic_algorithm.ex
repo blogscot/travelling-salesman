@@ -29,9 +29,9 @@ defmodule GeneticAlgorithm do
   Calculates the fitness of a candidate solution.
   """
 
-  def updateFitness(%Individual{chromosome: chromosome}=individual) do
+  def updateFitness(%Individual{}=individual) do
     distance =
-      chromosome
+      individual
       |> Route.new
       |> Route.getDistance
 
@@ -73,7 +73,6 @@ end
     |> Enum.take(tournamentSize)
     |> Enum.into(%{})
     |> Population.getFittest
-    |> (fn {_key, parent} -> parent end).()
   end
 
   @doc """

@@ -9,7 +9,7 @@ defmodule Route do
   a new city instance.
   """
 
-  def new(%{}=chromosome) do
+  def new(%Individual{chromosome: chromosome}) do
     for gene <- chromosome do
       Cities.get_cities[elem(gene, 1)]
       |> City.new

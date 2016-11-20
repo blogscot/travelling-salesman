@@ -72,9 +72,9 @@ defmodule PopulationTest do
     # Evaluate each individual's fitness
     new_pop = GeneticAlgorithm.updateFitness(population)
 
-    assert {0, %Individual{fitness: fitness1}} = new_pop |> Population.getFittest
-    assert {2, %Individual{fitness: fitness2}} = new_pop |> Population.getFittest(1)
-    assert {1, %Individual{fitness: fitness3}} = new_pop |> Population.getFittest(2)
+    assert %Individual{fitness: fitness1} = new_pop |> Population.getFittest
+    assert %Individual{fitness: fitness2} = new_pop |> Population.getFittest(1)
+    assert %Individual{fitness: fitness3} = new_pop |> Population.getFittest(2)
 
     assert fitness1 === 0.010499504733954064
     assert fitness2 === 0.01028730494505273

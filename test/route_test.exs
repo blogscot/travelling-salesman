@@ -4,9 +4,9 @@ defmodule RouteTest do
 
   test "A new route contains the correct cities" do
     bob = Individual.new(100)
-    route1 = Route.new(bob.chromosome)
+    route1 = Route.new(bob)
     rob = bob |> Individual.shuffle
-    route2 = Route.new(rob.chromosome)
+    route2 = Route.new(rob)
 
     refute bob == rob
     # refute that the routes are the same
