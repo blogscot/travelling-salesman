@@ -14,7 +14,7 @@ defmodule Tsp do
   def run do
     population =
       Population.new(@numCities)
-      |> GeneticAlgorithm.updateFitness
+      |> GeneticAlgorithm.evaluate
 
     distance = calculate_distance(population)
     IO.puts("Start Distance: #{distance}")
@@ -34,13 +34,13 @@ defmodule Tsp do
       population
       |> GeneticAlgorithm.crossover(@crossoverRate, @elitismCount, @tournamentSize)
       |> GeneticAlgorithm.mutate(@elitismCount, @mutationRate)
-      |> GeneticAlgorithm.updateFitness
+      |> GeneticAlgorithm.evaluate
 
     distance = calculate_distance(new_population)
     process_population(new_population, generation+1, distance)
   end
 
-  defp calculate_distance(population) do
+  def calculate_distance(population) do
     population
     |> Population.getFittest
     |> Route.new

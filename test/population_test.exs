@@ -70,7 +70,7 @@ defmodule PopulationTest do
     population = put_in(population[2].chromosome[2], 8)
 
     # Evaluate each individual's fitness
-    new_pop = GeneticAlgorithm.updateFitness(population)
+    new_pop = GeneticAlgorithm.evaluate(population)
 
     assert %Individual{fitness: fitness1} = new_pop |> Population.getFittest
     assert %Individual{fitness: fitness2} = new_pop |> Population.getFittest(1)

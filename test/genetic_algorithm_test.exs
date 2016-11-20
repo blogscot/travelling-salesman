@@ -9,7 +9,7 @@ defmodule GeneticAlgorithmTest do
       |> Enum.into(%{}, fn {key, ind} ->
         {key, Individual.shuffle(ind)}
       end)
-      |> GeneticAlgorithm.updateFitness
+      |> GeneticAlgorithm.evaluate
 
     {:ok, [population: population]}
   end
@@ -27,21 +27,9 @@ defmodule GeneticAlgorithmTest do
     # Make the individuals different
     population = put_in(population[0].chromosome[1], 2)
 
-    new_population = updateFitness(population)
+    new_population = evaluate(population)
 
     refute new_population[0].fitness == new_population[1].fitness
-  end
-
-  test "Calculate the average fitness of a population (evaluation)" do
-    population_of_2 = Population.new(2)
-    population_of_10 = Population.new(10)
-    population_of_20 = Population.new(20)
-
-    # As the population increases the total distance between
-    # cities increases, and thus the average fitness decreases
-    assert evaluate(population_of_2) == 0.013360676473519621
-    assert evaluate(population_of_10) == 0.0029593918174858317
-    assert evaluate(population_of_20) == 0.0012562399661038138
   end
 
   test "Elite population members are not subject to mutation" do

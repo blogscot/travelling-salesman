@@ -18,13 +18,6 @@ defmodule GeneticAlgorithm do
     Population.new(population_size, chromosome_length)
   end
 
-
-  @doc """
-  Evaluates true when generation count limit has been reached.
-  """
-
-  def terminateSearch?(count, limit), do: count > limit
-
   @doc """
   Calculates the fitness of a candidate solution.
   """
@@ -43,25 +36,12 @@ defmodule GeneticAlgorithm do
   Updates the fitness for each member of the population.
   """
 
-def updateFitness(%{}=population) do
+def evaluate(%{}=population) do
   population
   |> Stream.map(fn {key, individual} ->
     {key, updateFitness(individual)}
   end) |> Enum.into(%{})
 end
-
-  @doc """
-  Calculates the population average fitness.
-  """
-
-  def evaluate(%{}=population) do
-    population
-    |> updateFitness
-    |> Stream.map(fn {_, individual} ->
-      individual.fitness
-    end) |> Enum.sum
-         |> Kernel./(map_size(population))
-  end
 
   @doc """
   Select a parent from the population using tournament selection.
