@@ -144,7 +144,7 @@ defmodule GeneticAlgorithmTest do
    # Substring from parent1, plus ordered genes from parent2
    # [_, _, _, 9, 5, 6, 4, _, _, _] from parent1
    # (2, not 6, 8, 0, 7, 3, 1) from parent2
-   assert crossover(parent1, parent2, 3, 6) == offspring
+   assert crossover(parent1, parent2, {3, 6}) == offspring
   end
 
   test "Elite population members do not experience crossover", context do

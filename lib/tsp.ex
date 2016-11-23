@@ -5,7 +5,8 @@ defmodule Tsp do
   """
 
   @max_generation 100
-  @numCities 33
+  @min_distance 800
+  @numCities 32
   @mutationRate 0.001
   @crossoverRate 0.9
   @elitismCount 3
@@ -23,7 +24,7 @@ defmodule Tsp do
   end
 
   defp process_population(_population, generation, distance)
-    when generation >= @max_generation do
+    when @min_distance >= distance do
       IO.puts("Stopped after #{generation} generations.")
       IO.puts("Best Distance: #{distance}")
     end

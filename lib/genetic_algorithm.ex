@@ -78,7 +78,7 @@ end
   from first parent only) while preserving the gene ordering in the second
   parent (ordered crossover).
 
-  finish   the last gene position in offspring taken from parent1.
+  finish   the first empty gene position following parent1 substring.
   """
 
   def insertGenes(%{}=offspring, %{}=parent2, finish) do
@@ -94,9 +94,7 @@ end
       else
         # find the key containing the first nil value
         {offspring_index, _value} =
-          acc
-          |> Enum.sort
-          |> Enum.find(fn {_k, v} -> is_nil(v) end)
+          acc |> Enum.sort |> Enum.find(&match?({_, nil}, &1))
         # copy the missing value into offspring
         acc |> Individual.setGene(offspring_index, parent2_gene)
       end
@@ -109,7 +107,7 @@ end
   """
 
   def crossover(%Individual{chromosome: c1},
-                %Individual{chromosome: c2}, start, finish) when start <= finish do
+                %Individual{chromosome: c2}, {start, finish}) when start <= finish do
 
     # Copy substring from first parent into offspring
     offspring = createOffspring(c1, start, finish)
@@ -117,7 +115,6 @@ end
     # Insert remaining genes (in order) from parent2 into offspring
     offspring_chromosome = insertGenes(offspring, c2, finish+1)
 
-    # IO.inspect("Offspring2 #{inspect offspring_chromosome}, #{start}, #{finish}")
     %Individual{chromosome: offspring_chromosome}
   end
 
@@ -128,17 +125,13 @@ end
   """
 
   def crossover(%{}=population, crossoverRate, elitismCount, tournamentSize) do
+    chromosome_size = population[0].chromosome |> map_size
     sorted_population = population |> Population.sort
 
     elite_population =
       sorted_population
       |> Stream.take(elitismCount)
       |> Enum.into(%{})
-
-    chromosome_size =
-      population
-      |> Population.getIndividual(0)
-      |> (fn ind -> map_size(ind.chromosome) end).()
 
     crossover_population =
       sorted_population
@@ -147,12 +140,12 @@ end
         if crossoverRate > :rand.uniform do
           parent2 = selectParent(population, tournamentSize)
 
-          {start, finish} =
+          start_finish =
             Enum.min_max([:rand.uniform(chromosome_size)-1,
                           :rand.uniform(chromosome_size)-1])
 
           # Create offspring
-          offspring = crossover(parent1, parent2, start, finish)
+          offspring = crossover(parent1, parent2, start_finish)
           {key, offspring}
         else
           {key, parent1}
