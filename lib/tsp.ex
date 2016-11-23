@@ -5,10 +5,10 @@ defmodule Tsp do
   """
 
   @max_generation 100
-  @min_distance 800
+  @min_distance 700
   @numCities 32
   @mutationRate 0.001
-  @crossoverRate 0.9
+  @crossoverRate 0.95
   @elitismCount 3
   @tournamentSize 5
 
