@@ -56,10 +56,29 @@ end
   end
 
   @doc """
-  Inserts genes from parent2 into the partial offspring retaining the gene
-  ordering in parent2 (ordered crossover).
+  Create a partial offspring chromosome with genes taken from the first parent
+  using the given start and finish indices.
+  """
 
-  finish  the last gene position in offspring taken from parent1.
+  def createOffspring(%{}=parent1, start, finish) do
+    offspring = Individual.offspring(map_size(parent1))
+
+    offspring.chromosome
+    |> Enum.map(fn {key, value} ->
+      if key in start..finish do
+        {key, parent1 |> Individual.getGene(key)}
+      else
+        {key, value}
+      end
+    end) |> Enum.into(%{})
+  end
+
+  @doc """
+  Inserts genes from the second parent into a partial offspring (i.e. genes
+  from first parent only) while preserving the gene ordering in the second
+  parent (ordered crossover).
+
+  finish   the last gene position in offspring taken from parent1.
   """
 
   def insertGenes(%{}=offspring, %{}=parent2, finish) do
@@ -82,24 +101,6 @@ end
         acc |> Individual.setGene(offspring_index, parent2_gene)
       end
     end)
-  end
-
-  @doc """
-  Create a partial offspring chromosome using genes from the first parent
-  using the given start and finish indices.
-  """
-
-  def createOffspring(%{}=parent1, start, finish) do
-    offspring = Individual.offspring(map_size(parent1))
-
-    offspring.chromosome
-    |> Enum.map(fn {key, value} ->
-      if key in start..finish do
-        {key, parent1 |> Individual.getGene(key)}
-      else
-        {key, value}
-      end
-    end) |> Enum.into(%{})
   end
 
   @doc """

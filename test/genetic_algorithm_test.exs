@@ -89,23 +89,48 @@ defmodule GeneticAlgorithmTest do
   end
 
   test "Offspring inherit genes in an ordered mapping from its second parent" do
-    parent2 = %{0 => 9, 1 => 8, 2 => 7, 3 => 6, 4 => 5, 5 => 4, 6 => 3,
-    7 => 2, 8 => 1, 9 => 0}
-    offspring1 = %{0 => nil, 1 => nil, 2 => nil, 3 => 3, 4 => 4, 5 => 5, 6 => 6,
+    offspring = %{0 => nil, 1 => nil, 2 => nil, 3 => 3, 4 => 4, 5 => 5, 6 => 6,
     7 => 7, 8 => 8, 9 => nil}   # 3 to 8
-    result1 = %{0 => 0, 1 => 9, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6,
+    parent = %{0 => 9, 1 => 8, 2 => 7, 3 => 6, 4 => 5, 5 => 4, 6 => 3,
+    7 => 2, 8 => 1, 9 => 0}
+    result = %{0 => 0, 1 => 9, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6,
     7 => 7, 8 => 8, 9 => 1}
 
     # 9, not 8,7,6,5,4,3, 2, 1, 0
-    assert insertGenes(offspring1, parent2, 8) == result1
+    assert insertGenes(offspring, parent, 8) == result
+  end
 
-    offspring2 = %{0 => nil, 1 => nil, 2 => nil, 3 => nil, 4 => nil, 5 => nil,
+  test "insert genes into an offspring with a single gene at end" do
+    offspring = %{0 => nil, 1 => nil, 2 => nil, 3 => nil, 4 => nil, 5 => nil,
     6 => nil, 7 => nil, 8 => nil, 9 => 3}   # 9
-    result2 = %{0 => 9, 1 => 8, 2 => 7, 3 => 6, 4 => 5, 5 => 4, 6 => 2,
+    parent = %{0 => 9, 1 => 8, 2 => 7, 3 => 6, 4 => 5, 5 => 4, 6 => 3,
+    7 => 2, 8 => 1, 9 => 0}
+    result = %{0 => 9, 1 => 8, 2 => 7, 3 => 6, 4 => 5, 5 => 4, 6 => 2,
     7 => 1, 8 => 0, 9 => 3}
 
-    #
-    assert insertGenes(offspring2, parent2, 9) == result2
+    assert insertGenes(offspring, parent, 9) == result
+  end
+
+  test "insert genes into offspring with multiple genes at end" do
+    offspring = %{0 => nil, 1 => nil, 2 => nil, 3 => nil, 4 => nil, 5 => nil,
+    6 => nil, 7 => 8, 8 => 2, 9 => 5}   # 9
+    parent = %{0 => 9, 1 => 8, 2 => 7, 3 => 6, 4 => 5, 5 => 4, 6 => 3,
+    7 => 2, 8 => 1, 9 => 0}
+    result = %{0 => 9, 1 => 7, 2 => 6, 3 => 4, 4 => 3, 5 => 1, 6 => 0,
+    7 => 8, 8 => 2, 9 => 5}
+
+    assert insertGenes(offspring, parent, 9) == result
+  end
+
+  test "insert genes into offspring with multiple genes in middle" do
+    offspring = %{0 => nil, 1 => 4, 2 => 0, 3 => 8, 4 => nil, 5 => nil,
+    6 => nil, 7 => nil, 8 => nil, 9 => nil}   # 1 to 3
+    parent = %{0 => 9, 1 => 8, 2 => 7, 3 => 6, 4 => 5, 5 => 4, 6 => 3,
+    7 => 2, 8 => 1, 9 => 0}
+    result = %{0 => 5, 1 => 4, 2 => 0, 3 => 8, 4 => 3, 5 => 2, 6 => 1,
+    7 => 9, 8 => 7, 9 => 6}
+
+    assert insertGenes(offspring, parent, 3) == result
   end
 
   test "Ordered crossover takes genes from both parent chromosomes" do
