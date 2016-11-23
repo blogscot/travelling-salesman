@@ -5,7 +5,7 @@ defmodule Tsp do
   """
 
   @max_generation 100
-  @numCities 32
+  @numCities 33
   @mutationRate 0.001
   @crossoverRate 0.9
   @elitismCount 3

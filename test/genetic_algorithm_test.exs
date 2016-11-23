@@ -97,7 +97,7 @@ defmodule GeneticAlgorithmTest do
     7 => 7, 8 => 8, 9 => 1}
 
     # 9, not 8,7,6,5,4,3, 2, 1, 0
-    assert insertGenes(offspring, parent, 8) == result
+    assert insertGenes(offspring, parent, 8+1) == result
   end
 
   test "insert genes into an offspring with a single gene at end" do
@@ -108,7 +108,7 @@ defmodule GeneticAlgorithmTest do
     result = %{0 => 9, 1 => 8, 2 => 7, 3 => 6, 4 => 5, 5 => 4, 6 => 2,
     7 => 1, 8 => 0, 9 => 3}
 
-    assert insertGenes(offspring, parent, 9) == result
+    assert insertGenes(offspring, parent, 9+1) == result
   end
 
   test "insert genes into offspring with multiple genes at end" do
@@ -119,7 +119,7 @@ defmodule GeneticAlgorithmTest do
     result = %{0 => 9, 1 => 7, 2 => 6, 3 => 4, 4 => 3, 5 => 1, 6 => 0,
     7 => 8, 8 => 2, 9 => 5}
 
-    assert insertGenes(offspring, parent, 9) == result
+    assert insertGenes(offspring, parent, 9+1) == result
   end
 
   test "insert genes into offspring with multiple genes in middle" do
@@ -130,7 +130,7 @@ defmodule GeneticAlgorithmTest do
     result = %{0 => 5, 1 => 4, 2 => 0, 3 => 8, 4 => 3, 5 => 2, 6 => 1,
     7 => 9, 8 => 7, 9 => 6}
 
-    assert insertGenes(offspring, parent, 3) == result
+    assert insertGenes(offspring, parent, 3+1) == result
   end
 
   test "Ordered crossover takes genes from both parent chromosomes" do

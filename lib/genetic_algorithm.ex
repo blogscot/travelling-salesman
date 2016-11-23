@@ -86,17 +86,17 @@ end
 
     0..chromosome_size-1
     |> Enum.reduce(offspring, fn key, acc ->
-      # IO.inspect("Acc: #{inspect acc}")
-      parent2_key = rem(key + finish + 1, chromosome_size)
+      parent2_key = rem(key + finish, chromosome_size)
       parent2_gene = parent2 |> Individual.getGene(parent2_key)
 
-      # IO.write("#{parent2_gene} ")
       if acc |> Individual.containsGene?(parent2_gene) do
         acc
       else
-        # find the index of the first nil value
-        offspring_index = acc |> Enum.find_index(fn {_k, v} -> v == nil end)
-        # IO.write("#{offspring_index} ")
+        # find the key containing the first nil value
+        {offspring_index, _value} =
+          acc
+          |> Enum.sort
+          |> Enum.find(fn {_k, v} -> is_nil(v) end)
         # copy the missing value into offspring
         acc |> Individual.setGene(offspring_index, parent2_gene)
       end
@@ -115,7 +115,7 @@ end
     offspring = createOffspring(c1, start, finish)
 
     # Insert remaining genes (in order) from parent2 into offspring
-    offspring_chromosome = insertGenes(offspring, c2, finish)
+    offspring_chromosome = insertGenes(offspring, c2, finish+1)
 
     # IO.inspect("Offspring2 #{inspect offspring_chromosome}, #{start}, #{finish}")
     %Individual{chromosome: offspring_chromosome}
