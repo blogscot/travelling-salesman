@@ -36,22 +36,22 @@ defmodule GeneticAlgorithm do
   Updates the fitness for each member of the population.
   """
 
-def evaluate(%{}=population) do
+def evaluate(%Array{}=population) do
   population
-  |> Stream.map(fn {key, individual} ->
-    {key, updateFitness(individual)}
-  end) |> Enum.into(%{})
+  |> Enum.map(fn individual ->
+    updateFitness(individual)
+  end) |> Array.from_list
 end
 
   @doc """
   Select a parent from the population using tournament selection.
   """
 
-  def selectParent(%{}=population, tournamentSize) when tournamentSize > 0 do
+  def selectParent(%Array{}=population, tournamentSize) when tournamentSize > 0 do
     population
     |> Population.shuffle
     |> Enum.take(tournamentSize)
-    |> Enum.into(%{})
+    |> Array.from_list
     |> Population.getFittest
   end
 
@@ -125,19 +125,18 @@ end
   containing genetic material from both parents.
   """
 
-  def crossover(%{}=population, crossoverRate, elitismCount, tournamentSize) do
-    chromosome_size = population[0].chromosome |> map_size
+  def crossover(%Array{}=population, crossoverRate, elitismCount, tournamentSize) do
+    chromosome_size = population[0].chromosome |> Array.size
     sorted_population = population |> Population.sort
 
     elite_population =
       sorted_population
-      |> Stream.take(elitismCount)
-      |> Enum.into(%{})
+      |> Enum.take(elitismCount)
 
     crossover_population =
       sorted_population
       |> Stream.drop(elitismCount)
-      |> Enum.map(fn {key, parent1} ->
+      |> Enum.map(fn parent1 ->
         if crossoverRate > :rand.uniform do
           parent2 = selectParent(population, tournamentSize)
 
@@ -146,14 +145,13 @@ end
                           :rand.uniform(chromosome_size)-1])
 
           # Create offspring
-          offspring = crossover(parent1, parent2, start_finish)
-          {key, offspring}
+          crossover(parent1, parent2, start_finish)
         else
-          {key, parent1}
+          parent1
         end
-      end) |> Enum.into(%{})
+      end)
 
-    Map.merge(elite_population, crossover_population)
+    (elite_population ++ crossover_population) |> Array.from_list
   end
 
   @doc """
@@ -163,19 +161,19 @@ end
   without mutation, where n = elitismCount.
   """
 
-  def mutate(%{}=population, elitismCount, mutationRate) do
+  def mutate(%Array{}=population, elitismCount, mutationRate) do
     sorted_population = population |> Population.sort
 
-    elite = sorted_population |> Stream.take(elitismCount) |> Enum.into(%{})
+    elite = sorted_population |> Enum.take(elitismCount)
 
     non_elite =
       sorted_population
       |> Stream.drop(elitismCount)
-      |> Stream.map(fn {key, ind} ->
-        {key, ind |> Individual.mutate(mutationRate)}
-      end) |> Enum.into(%{})
+      |> Enum.map(fn ind ->
+        ind |> Individual.mutate(mutationRate)
+      end)
 
-    Map.merge(elite, non_elite)
+    (elite ++ non_elite) |> Array.from_list
   end
 
 end

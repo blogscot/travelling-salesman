@@ -6,7 +6,7 @@ defmodule Tsp do
 
   @max_generation 100
   @min_distance 700
-  @numCities 50
+  @numCities 40
   @mutationRate 0.001
   @crossoverRate 0.95
   @elitismCount 3
@@ -41,7 +41,7 @@ defmodule Tsp do
     process_population(new_population, generation+1, distance)
   end
 
-  def calculate_distance(population) do
+  def calculate_distance(%Array{}=population) do
     population
     |> Population.getFittest
     |> Route.new

@@ -6,9 +6,8 @@ defmodule GeneticAlgorithmTest do
   setup _context do
     population =
       Population.new(10)
-      |> Enum.into(%{}, fn {key, ind} ->
-        {key, Individual.shuffle(ind)}
-      end)
+      |> Enum.map(&Individual.shuffle/1)
+      |> Array.from_list
       |> GeneticAlgorithm.evaluate
 
     {:ok, [population: population]}
@@ -25,9 +24,12 @@ defmodule GeneticAlgorithmTest do
     population = Population.new(2)
 
     # Make the individuals different
-    population = put_in(population[0].chromosome[1], 2)
+    bob = population[0].chromosome |> Individual.setGene(1, 2)
+    changed_pop =
+      population
+      |> Population.setIndividual(%Individual{chromosome: bob}, 0)
 
-    new_population = evaluate(population)
+    new_population = evaluate(changed_pop)
 
     refute new_population[0].fitness == new_population[1].fitness
   end
@@ -135,15 +137,15 @@ defmodule GeneticAlgorithmTest do
   test "Elite population members do not experience crossover", context do
     population = context[:population]
     new_population = GeneticAlgorithm.crossover(population, 1, 10, 3)
-    assert population == new_population
+
+    assert population |> Population.sort == new_population |> Population.sort
   end
 
   test "Population members are unchanged when crossover rate is zero", context do
     population = context[:population]
-    new_population =
-      GeneticAlgorithm.crossover(population, 0, 3, 3)
+    new_population = GeneticAlgorithm.crossover(population, 0, 3, 3)
 
-    assert population == new_population
+    assert population |> Population.sort == new_population |> Population.sort
   end
 
   test "Population members are changed when crossover rate is one", context do

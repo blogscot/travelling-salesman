@@ -9,9 +9,8 @@ defmodule Population do
   """
 
   def new(population_size) when population_size > 0 do
-    0..population_size-1
-    |> Enum.reduce(%{},
-        fn x, acc -> Map.update(acc, x, Individual.new(population_size), &(&1)) end)
+    for _ <- 0..population_size-1, into: Array.new, do:
+      Individual.new(population_size)
   end
 
   @doc """
@@ -19,25 +18,28 @@ defmodule Population do
   the chromosomes of the specified length.
   """
 
-  def new(population_size, chromosome_length)
-    when population_size > 0 and chromosome_length > 0 do
-    0..population_size-1
-    |> Enum.into(%{}, fn x -> {x, Individual.new(chromosome_length)} end)
+  def new(population_size, chromosome_length) do
+    for _ <- 0..population_size-1, into: Array.new, do:
+      Individual.new(chromosome_length)
   end
 
   @doc """
   Updates the individual in a population at the given position.
+
+  This is currently only used in test and may be deleted.
   """
 
-  def setIndividual(%{}=population, %{}=individual, offset) do
-    Map.update(population, offset, nil, &(&1=individual))
+  def setIndividual(%Array{}=population, %Individual{}=individual, offset) do
+    Array.set(population, offset, individual)
   end
 
   @doc """
   Returns a population member at the given offset.
+
+  This is currently only used in test and may be deleted.
   """
 
-  def getIndividual(%{}=population, offset) do
+  def getIndividual(%Array{}=population, offset) do
     population[offset]
   end
 
@@ -45,10 +47,9 @@ defmodule Population do
   Orders the population members according to their fitness.
   """
 
-  def sort(%{}=population) do
+  def sort(%Array{}=population) do
     population
-    |> Enum.sort_by(fn {_key, individual} -> individual.fitness end,
-                  &(&1>&2))
+    |> Enum.sort_by(&(&1.fitness), &(&1>&2))
   end
 
   @doc """
@@ -56,11 +57,10 @@ defmodule Population do
   If an offset is given, it finds the nth fittest individual.
   """
 
-  def getFittest(%{}=population, offset \\ 0) when offset >= 0 do
+  def getFittest(%Array{}=population, offset \\ 0) when offset >= 0 do
     population
     |> sort
     |> Enum.at(offset)
-    |> (fn {_key, individual} -> individual end).()
   end
 
   @doc """
@@ -68,12 +68,10 @@ defmodule Population do
   Note: the chromosome contents remain untouched.
   """
 
-  def shuffle(%{}=population) do
+  def shuffle(%Array{}=population) do
     population
-    |> Map.keys
     |> Enum.shuffle
-    |> Enum.zip(population |> Map.values)
-    |> Enum.into(%{})
+    |> Array.from_list
   end
 
 end

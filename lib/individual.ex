@@ -90,7 +90,6 @@ end
   def shuffle(%Individual{chromosome: chromosome}=individual) do
     %Individual{individual |
       chromosome: chromosome
-          |> Array.to_list
           |> Enum.shuffle
           |> Array.from_list
     }

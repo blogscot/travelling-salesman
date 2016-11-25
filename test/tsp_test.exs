@@ -7,7 +7,7 @@ defmodule TspTest do
       Population.new(35)
       |> GeneticAlgorithm.evaluate
 
-    assert map_size(population) == 35
+    assert Array.size(population) == 35
     assert Tsp.calculate_distance(population) == 1657.5738695563828
   end
 

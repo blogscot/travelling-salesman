@@ -66,11 +66,16 @@ defmodule PopulationTest do
     population = Population.new(3)
 
     # Make the individuals different
-    population = put_in(population[1].chromosome[2], 4)
-    population = put_in(population[2].chromosome[2], 8)
+    bob = population[1].chromosome |> Individual.setGene(2, 4)
+    alice = population[2].chromosome |> Individual.setGene(2, 8)
+
+    changed_pop =
+      population
+      |> Population.setIndividual(%Individual{chromosome: bob}, 1)
+      |> Population.setIndividual(%Individual{chromosome: alice}, 2)
 
     # Evaluate each individual's fitness
-    new_pop = GeneticAlgorithm.evaluate(population)
+    new_pop = GeneticAlgorithm.evaluate(changed_pop)
 
     assert %Individual{fitness: fitness1} = new_pop |> Population.getFittest
     assert %Individual{fitness: fitness2} = new_pop |> Population.getFittest(1)
