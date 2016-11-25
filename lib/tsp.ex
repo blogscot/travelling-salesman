@@ -6,7 +6,7 @@ defmodule Tsp do
 
   @max_generation 100
   @min_distance 700
-  @numCities 32
+  @numCities 50
   @mutationRate 0.001
   @crossoverRate 0.95
   @elitismCount 3

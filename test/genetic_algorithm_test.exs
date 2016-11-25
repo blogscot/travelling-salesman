@@ -72,74 +72,59 @@ defmodule GeneticAlgorithmTest do
 
   test "Offspring inherits genes from directly from its first parent" do
     parent1 = Individual.new(10)
-    offspring1 = %{0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6,
-    7 => 7, 8 => 8, 9 => 9}
-    offspring2 = %{0 => nil, 1 => nil, 2 => nil, 3 => 3, 4 => 4, 5 => 5, 6 => 6,
-    7 => 7, 8 => 8, 9 => nil}
-    offspring3 = %{0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => nil, 5 => nil, 6 => nil,
-    7 => nil, 8 => nil, 9 => nil}
-    offspring4 = %{0 => nil, 1 => nil, 2 => nil, 3 => nil, 4 => 4, 5 => nil,
-    6 => nil, 7 => nil, 8 => nil, 9 => nil}
+    offspring1 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] |> Array.from_list
+    offspring2 = [nil, nil, nil, 3, 4, 5, 6, 7, 8, nil] |> Array.from_list
+    offspring3 = [0, 1, 2, 3, nil, nil, nil, nil, nil, nil] |> Array.from_list
+    offspring4 = [nil, nil, nil, nil, 4, nil, nil, nil, nil, nil] |> Array.from_list
 
-    assert createOffspring(parent1.chromosome, 0, 9) == offspring1
-    assert createOffspring(parent1.chromosome, 3, 8) == offspring2
-    assert createOffspring(parent1.chromosome, 0, 3) == offspring3
-    assert createOffspring(parent1.chromosome, 0, 3) == offspring3
-    assert createOffspring(parent1.chromosome, 4, 4) == offspring4
+    # createOffpring returns fixed arrays
+    assert createOffspring(parent1.chromosome, 0, 9) == offspring1 |> Array.fix
+    assert createOffspring(parent1.chromosome, 3, 8) == offspring2 |> Array.fix
+    assert createOffspring(parent1.chromosome, 0, 3) == offspring3 |> Array.fix
+    assert createOffspring(parent1.chromosome, 0, 3) == offspring3 |> Array.fix
+    assert createOffspring(parent1.chromosome, 4, 4) == offspring4 |> Array.fix
   end
 
   test "Offspring inherit genes in an ordered mapping from its second parent" do
-    offspring = %{0 => nil, 1 => nil, 2 => nil, 3 => 3, 4 => 4, 5 => 5, 6 => 6,
-    7 => 7, 8 => 8, 9 => nil}   # 3 to 8
-    parent = %{0 => 9, 1 => 8, 2 => 7, 3 => 6, 4 => 5, 5 => 4, 6 => 3,
-    7 => 2, 8 => 1, 9 => 0}
-    result = %{0 => 0, 1 => 9, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6,
-    7 => 7, 8 => 8, 9 => 1}
+    offspring = [nil, nil, nil, 3, 4, 5, 6, 7, 8, nil] |> Array.from_list   # 3 to 8
+    parent = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0] |> Array.from_list
+    result = [0, 9, 2, 3, 4, 5, 6, 7, 8, 1] |> Array.from_list
 
     # 9, not 8,7,6,5,4,3, 2, 1, 0
     assert insertGenes(offspring, parent, 8+1) == result
   end
 
   test "insert genes into an offspring with a single gene at end" do
-    offspring = %{0 => nil, 1 => nil, 2 => nil, 3 => nil, 4 => nil, 5 => nil,
-    6 => nil, 7 => nil, 8 => nil, 9 => 3}   # 9
-    parent = %{0 => 9, 1 => 8, 2 => 7, 3 => 6, 4 => 5, 5 => 4, 6 => 3,
-    7 => 2, 8 => 1, 9 => 0}
-    result = %{0 => 9, 1 => 8, 2 => 7, 3 => 6, 4 => 5, 5 => 4, 6 => 2,
-    7 => 1, 8 => 0, 9 => 3}
+    offspring = [nil, nil, nil, nil, nil, nil, nil, nil, nil, 3] |> Array.from_list   # 9
+    parent = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0] |> Array.from_list
+    result = [9, 8, 7, 6, 5, 4, 2, 1, 0, 3] |> Array.from_list
 
     assert insertGenes(offspring, parent, 9+1) == result
   end
 
   test "insert genes into offspring with multiple genes at end" do
-    offspring = %{0 => nil, 1 => nil, 2 => nil, 3 => nil, 4 => nil, 5 => nil,
-    6 => nil, 7 => 8, 8 => 2, 9 => 5}   # 9
-    parent = %{0 => 9, 1 => 8, 2 => 7, 3 => 6, 4 => 5, 5 => 4, 6 => 3,
-    7 => 2, 8 => 1, 9 => 0}
-    result = %{0 => 9, 1 => 7, 2 => 6, 3 => 4, 4 => 3, 5 => 1, 6 => 0,
-    7 => 8, 8 => 2, 9 => 5}
+    offspring = [nil, nil, nil, nil, nil, nil, nil, 8, 2, 5] |> Array.from_list   # 9
+    parent = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0] |> Array.from_list
+    result = [9, 7, 6, 4, 3, 1, 0, 8, 2, 5] |> Array.from_list
 
     assert insertGenes(offspring, parent, 9+1) == result
   end
 
   test "insert genes into offspring with multiple genes in middle" do
-    offspring = %{0 => nil, 1 => 4, 2 => 0, 3 => 8, 4 => nil, 5 => nil,
-    6 => nil, 7 => nil, 8 => nil, 9 => nil}   # 1 to 3
-    parent = %{0 => 9, 1 => 8, 2 => 7, 3 => 6, 4 => 5, 5 => 4, 6 => 3,
-    7 => 2, 8 => 1, 9 => 0}
-    result = %{0 => 5, 1 => 4, 2 => 0, 3 => 8, 4 => 3, 5 => 2, 6 => 1,
-    7 => 9, 8 => 7, 9 => 6}
+    offspring = [nil, 4, 0, 8, nil, nil, nil, nil, nil, nil] |> Array.from_list   # 1 to 3
+    parent = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0] |> Array.from_list
+    result = [5, 4, 0, 8, 3, 2, 1, 9, 7, 6] |> Array.from_list
 
     assert insertGenes(offspring, parent, 3+1) == result
   end
 
   test "Ordered crossover takes genes from both parent chromosomes" do
-    parent1 = %Individual{chromosome: %{0 => 2, 1 => 1, 2 => 7, 3 => 9, 4 => 5,
-    5 => 6, 6 => 4, 7 => 3, 8 => 0, 9 => 8}, fitness: nil}
-    parent2 = %Individual{chromosome: %{0 => 0, 1 => 7, 2 => 3, 3 => 9, 4 => 1,
-    5 => 4, 6 => 5, 7 => 2, 8 => 6, 9 => 8}, fitness: nil}
-    offspring = %Individual{chromosome: %{0 => 2, 1 => 8, 2 => 0, 3 => 9, 4 => 5,
-    5 => 6, 6 => 4, 7 => 7, 8 => 3, 9 => 1}, fitness: nil}
+    parent1 = %Individual{
+      chromosome: [2, 1, 7, 9, 5, 6, 4, 3, 0, 8] |> Array.from_list}
+    parent2 = %Individual{
+      chromosome: [0, 7, 3, 9, 1, 4, 5, 2, 6, 8] |> Array.from_list}
+    offspring = %Individual{
+      chromosome: [2, 8, 0, 9, 5, 6, 4, 7, 3, 1] |> Array.from_list |> Array.fix}
 
    # Substring from parent1, plus ordered genes from parent2
    # [_, _, _, 9, 5, 6, 4, _, _, _] from parent1

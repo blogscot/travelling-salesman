@@ -60,17 +60,19 @@ end
   using the given start and finish indices.
   """
 
-  def createOffspring(%{}=parent1, start, finish) do
-    offspring = Individual.offspring(map_size(parent1))
+  def createOffspring(%Array{}=parent_chromosome, start, finish) do
+    size = Array.size(parent_chromosome)
+    offspring = Individual.offspring(size)
 
-    offspring.chromosome
-    |> Enum.map(fn {key, value} ->
-      if key in start..finish do
-        {key, parent1 |> Individual.getGene(key)}
+    start..finish
+    |> Enum.reduce(offspring.chromosome, fn index, acc ->
+      if index in start..finish do
+        parent_gene = parent_chromosome |> Individual.getGene(index)
+        acc |> Individual.setGene(index, parent_gene)
       else
-        {key, value}
+        acc
       end
-    end) |> Enum.into(%{})
+    end)
   end
 
   @doc """
@@ -82,19 +84,18 @@ end
   """
 
   def insertGenes(%{}=offspring, %{}=parent2, finish) do
-    chromosome_size = map_size(parent2)
+    chromosome_size = Array.size(parent2)
 
     0..chromosome_size-1
-    |> Enum.reduce(offspring, fn key, acc ->
-      parent2_key = rem(key + finish, chromosome_size)
-      parent2_gene = parent2 |> Individual.getGene(parent2_key)
+    |> Enum.reduce(offspring, fn index, acc ->
+      parent2_index = rem(index + finish, chromosome_size)
+      parent2_gene = parent2 |> Individual.getGene(parent2_index)
 
       if acc |> Individual.containsGene?(parent2_gene) do
         acc
       else
-        # find the key containing the first nil value
-        {offspring_index, _value} =
-          acc |> Enum.sort |> Enum.find(&match?({_, nil}, &1))
+        # find the index of the first nil value
+        offspring_index = acc |> Enum.find_index(&is_nil/1)
         # copy the missing value into offspring
         acc |> Individual.setGene(offspring_index, parent2_gene)
       end
