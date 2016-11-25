@@ -13,14 +13,14 @@ defmodule PopulationTest do
   test "Population members have the expected size" do
     expected_size = 20
     population = Population.new(expected_size)
-    assert map_size(population[0].chromosome) == expected_size
+    assert Array.size(population[0].chromosome) == expected_size
   end
 
   test "Population members have the expect chromosome length" do
     population_size = 15
     expected_size = 25
     population = Population.new(population_size, expected_size)
-    assert map_size(population[0].chromosome) == expected_size
+    assert Array.size(population[0].chromosome) == expected_size
   end
 
   test "An individual in the population can be replaced" do
@@ -30,9 +30,9 @@ defmodule PopulationTest do
     population = Population.new(population_size)
     bob = Individual.new(bob_size)
 
-    new_population = Population.setIndividual(bob, population, position)
-    assert map_size(new_population[0].chromosome) == population_size
-    assert map_size(new_population[position].chromosome) == bob_size
+    new_population = Population.setIndividual(population, bob, position)
+    assert Array.size(new_population[0].chromosome) == population_size
+    assert Array.size(new_population[position].chromosome) == bob_size
   end
 
   test "An individual in the population can be retrieved" do
@@ -40,7 +40,7 @@ defmodule PopulationTest do
 
     population = Population.new(population_size)
     alice = Population.getIndividual(population, population_size-1)
-    assert map_size(alice.chromosome) == population_size  # using default chromosome length
+    assert Array.size(alice.chromosome) == population_size  # using default chromosome length
   end
 
   test "A shuffled population contains individuals in a different order" do

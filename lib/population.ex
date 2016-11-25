@@ -29,7 +29,7 @@ defmodule Population do
   Updates the individual in a population at the given position.
   """
 
-  def setIndividual(%{}=individual, %{}=population, offset) do
+  def setIndividual(%{}=population, %{}=individual, offset) do
     Map.update(population, offset, nil, &(&1=individual))
   end
 

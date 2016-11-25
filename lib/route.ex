@@ -11,7 +11,7 @@ defmodule Route do
 
   def new(%Individual{chromosome: chromosome}) do
     for gene <- chromosome do
-      Cities.get_cities[elem(gene, 1)]
+      Cities.get_cities[gene]
       |> City.new
       end
   end
