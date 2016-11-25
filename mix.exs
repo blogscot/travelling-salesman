@@ -27,6 +27,6 @@ defmodule Tsp.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [{:array, github: "blogscot/elixir-array"}]
   end
 end
