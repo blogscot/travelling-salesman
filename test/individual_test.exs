@@ -23,7 +23,7 @@ defmodule IndividualTest do
 
     for offset <- 0..map_size(bob)-1 do
       new_bob = bob |> Individual.setGene(offset, 1)
-      
+
       assert bob |> Individual.getGene(offset) == offset
       assert new_bob |> Individual.getGene(offset) == 1
     end
@@ -38,6 +38,14 @@ defmodule IndividualTest do
     refute Individual.containsGene?(bob, 33)
   end
 
+  test "A chromosome can have its genes swapped" do
+    %Individual{chromosome: bob} = Individual.new(100)
+
+    new_bob = bob |> Individual.swapGenes(33, 55)
+    assert new_bob |> Individual.getGene(33) == 55
+    assert new_bob |> Individual.getGene(55) == 33
+  end
+
   test "A mutated chromosome with mutation rate 0 is unchanged" do
     bob = Individual.new(10)
 
@@ -49,8 +57,8 @@ defmodule IndividualTest do
     mutated_bob = bob |> Individual.mutate(1)
 
     refute mutated_bob == bob
-    assert bob.chromosome |> Map.values |> Enum.sort ==
-           mutated_bob.chromosome |> Map.values |> Enum.sort
+    assert bob.chromosome |> Array.to_list |> Enum.sort ==
+           mutated_bob.chromosome |> Array.to_list |> Enum.sort
   end
 
 end

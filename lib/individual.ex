@@ -1,5 +1,5 @@
 defmodule Individual do
-  defstruct chromosome: %{}, fitness: nil
+  defstruct chromosome: %Array{}, fitness: nil
 
   @moduledoc """
   An Individual represents a possible candidate solution represented
@@ -15,34 +15,43 @@ defmodule Individual do
   """
 
   def new(length) when length > 0 do
-    %Individual{chromosome: Enum.into(0..length-1, %{}, fn x -> {x, x} end)}
+    chromosome = for gene <- 0..length-1, into: Array.new, do: gene
+    %Individual{chromosome: chromosome}
   end
 
   def offspring(length) when length > 0 do
-    %Individual{chromosome: Enum.into(0..length-1, %{}, fn x -> {x, nil} end)}
-  end
-
-  @doc """
-  Stores the gene at the specified offset in the chromosome.
-  """
-
-  def setGene(%{}=chromosome, offset, gene) do
-    Map.update(chromosome, offset, nil, &(&1=gene))
+    %Individual{chromosome: Array.new(length)}
   end
 
   @doc """
   Retrieves the gene at the specified offset from the chromosome
   """
 
-  def getGene(%{}=chromosome, offset) do
-    chromosome[offset]
+  def getGene(%Array{}=chromosome, offset) do
+    Array.get(chromosome, offset)
+  end
+
+  @doc """
+  Stores the gene at the specified offset in the chromosome.
+  """
+
+  def setGene(%Array{}=chromosome, offset, gene) do
+    Array.set(chromosome, offset, gene)
+  end
+
+  @doc """
+  Returns true if the chromosome contains the specified gene.
+  """
+
+  def containsGene?(%Array{}=chromosome, gene) do
+    chromosome |> Enum.member?(gene)
   end
 
   @doc """
   Swap the genes at the given positions.
   """
 
-def swapGenes(%{}=chromosome, pos1, pos2) do
+def swapGenes(%Array{}=chromosome, pos1, pos2) do
   tmp = chromosome |> getGene(pos1)
 
   chromosome
@@ -55,7 +64,7 @@ end
   """
 
   def mutate(%Individual{chromosome: chromosome}=individual, mutationRate) do
-    chromosome_size = map_size(chromosome)
+    chromosome_size = Array.size(chromosome)
 
     mutation =
       chromosome
@@ -74,15 +83,6 @@ end
     end
   end
 
-
-  @doc """
-  Returns true if the chromosome contains the specified gene.
-  """
-
-  def containsGene?(%{}=chromosome, gene) do
-    chromosome |> Enum.find_value(fn {_k, v} -> v == gene end)
-  end
-
   @doc """
   Shuffles the contents of the chromosome
   """
@@ -90,11 +90,16 @@ end
   def shuffle(%Individual{chromosome: chromosome}=individual) do
     %Individual{individual |
       chromosome: chromosome
-        |> Map.keys
-        |> Enum.shuffle
-        |> Enum.zip(chromosome |> Map.values)
-        |> Enum.into(%{})
+          |> Array.to_list
+          |> Enum.shuffle
+          |> Array.from_list
     }
   end
+
+  @doc """
+  Returns the size of the array
+  """
+
+  def size(%Array{}=chromosome), do: Array.size(chromosome)
 
 end
