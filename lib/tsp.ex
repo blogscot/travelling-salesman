@@ -5,11 +5,11 @@ defmodule Tsp do
   """
 
   @max_generation 100
-  @min_distance 900
-  @num_cities 50
-  @mutation_rate 0.001
-  @crossover_rate 0.95
-  @elitism_count 3
+  @min_distance 70
+  @num_cities 40
+  @crossover_rate 0.99
+  @mutation_rate 0
+  @elitism_count 10
   @tournament_size 5
 
   @doc """
@@ -34,16 +34,19 @@ defmodule Tsp do
   end
 
   defp process_population(population, generation, distance) do
-    IO.puts("G#{generation} Best Distance: #{distance}")
-
     new_population =
       population
       |> GeneticAlgorithm.crossover(@crossover_rate, @elitism_count, @tournament_size)
       |> GeneticAlgorithm.mutate(@elitism_count, @mutation_rate)
       |> GeneticAlgorithm.evaluate
 
-    distance = calculate_distance(new_population)
-    process_population(new_population, generation + 1, distance)
+    new_distance = calculate_distance(new_population)
+
+    if new_distance != distance do
+      IO.puts("G#{generation} Best Distance: #{distance}")
+    end
+
+    process_population(new_population, generation + 1, new_distance)
   end
 
   @doc """
