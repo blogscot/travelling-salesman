@@ -5,12 +5,16 @@ defmodule Tsp do
   """
 
   @max_generation 100
-  @min_distance 700
-  @num_cities 40
+  @min_distance 900
+  @num_cities 50
   @mutation_rate 0.001
   @crossover_rate 0.95
   @elitism_count 3
   @tournament_size 5
+
+  @doc """
+  The entry point for the TSP algorithm.
+  """
 
   def run do
     population =
@@ -27,7 +31,8 @@ defmodule Tsp do
     when @min_distance >= distance do
       IO.puts("Stopped after #{generation} generations.")
       IO.puts("Best Distance: #{distance}")
-    end
+  end
+
   defp process_population(population, generation, distance) do
     IO.puts("G#{generation} Best Distance: #{distance}")
 
@@ -40,6 +45,13 @@ defmodule Tsp do
     distance = calculate_distance(new_population)
     process_population(new_population, generation + 1, distance)
   end
+
+  @doc """
+  Calculates the shortest distance (using the best candidate solution) for
+  the given population.
+
+  Note: function shared with test cases.
+  """
 
   def calculate_distance(%Array{} = population) do
     population
