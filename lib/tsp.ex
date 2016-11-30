@@ -6,15 +6,15 @@ defmodule Tsp do
 
   @max_generation 100
   @min_distance 700
-  @numCities 40
-  @mutationRate 0.001
-  @crossoverRate 0.95
-  @elitismCount 3
-  @tournamentSize 5
+  @num_cities 40
+  @mutation_rate 0.001
+  @crossover_rate 0.95
+  @elitism_count 3
+  @tournament_size 5
 
   def run do
     population =
-      Population.new(@numCities)
+      Population.new(@num_cities)
       |> GeneticAlgorithm.evaluate
 
     distance = calculate_distance(population)
@@ -33,15 +33,15 @@ defmodule Tsp do
 
     new_population =
       population
-      |> GeneticAlgorithm.crossover(@crossoverRate, @elitismCount, @tournamentSize)
-      |> GeneticAlgorithm.mutate(@elitismCount, @mutationRate)
+      |> GeneticAlgorithm.crossover(@crossover_rate, @elitism_count, @tournament_size)
+      |> GeneticAlgorithm.mutate(@elitism_count, @mutation_rate)
       |> GeneticAlgorithm.evaluate
 
     distance = calculate_distance(new_population)
-    process_population(new_population, generation+1, distance)
+    process_population(new_population, generation + 1, distance)
   end
 
-  def calculate_distance(%Array{}=population) do
+  def calculate_distance(%Array{} = population) do
     population
     |> Population.getFittest
     |> Route.new

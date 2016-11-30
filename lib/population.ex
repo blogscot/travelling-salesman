@@ -9,7 +9,7 @@ defmodule Population do
   """
 
   def new(population_size) when population_size > 0 do
-    for _ <- 0..population_size-1, into: Array.new, do:
+    for _ <- 0..population_size - 1, into: Array.new, do:
       Individual.new(population_size)
   end
 
@@ -19,7 +19,7 @@ defmodule Population do
   """
 
   def new(population_size, chromosome_length) do
-    for _ <- 0..population_size-1, into: Array.new, do:
+    for _ <- 0..population_size - 1, into: Array.new, do:
       Individual.new(chromosome_length)
   end
 
@@ -29,7 +29,7 @@ defmodule Population do
   This is currently only used in test and may be deleted.
   """
 
-  def setIndividual(%Array{}=population, %Individual{}=individual, offset) do
+  def setIndividual(%Array{} = population, %Individual {} = individual, offset) do
     Array.set(population, offset, individual)
   end
 
@@ -39,7 +39,7 @@ defmodule Population do
   This is currently only used in test and may be deleted.
   """
 
-  def getIndividual(%Array{}=population, offset) do
+  def getIndividual(%Array{} = population, offset) do
     population[offset]
   end
 
@@ -47,9 +47,9 @@ defmodule Population do
   Orders the population members according to their fitness.
   """
 
-  def sort(%Array{}=population) do
+  def sort(%Array{} = population) do
     population
-    |> Enum.sort_by(&(&1.fitness), &(&1>&2))
+    |> Enum.sort_by(&(&1.fitness), &(&1 > &2))
   end
 
   @doc """
@@ -57,7 +57,7 @@ defmodule Population do
   If an offset is given, it finds the nth fittest individual.
   """
 
-  def getFittest(%Array{}=population, offset \\ 0) when offset >= 0 do
+  def getFittest(%Array{} = population, offset \\ 0) when offset >= 0 do
     population
     |> sort
     |> Enum.at(offset)
@@ -68,7 +68,7 @@ defmodule Population do
   Note: the chromosome contents remain untouched.
   """
 
-  def shuffle(%Array{}=population) do
+  def shuffle(%Array{} = population) do
     population
     |> Enum.shuffle
     |> Array.from_list

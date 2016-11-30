@@ -2,6 +2,11 @@ defmodule Benchmark do
 
 @logfile "seq_logfile"
 
+  @moduledoc """
+  Performs basic benchmarking activities, i.e. running the TSP algorithms
+  multiple times, saving the timing results to log file.
+  """
+
   @doc """
   Runs and displays the time taken for  the TSP algorithm.
   """

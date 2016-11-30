@@ -15,7 +15,7 @@ defmodule Individual do
   """
 
   def new(length) when length > 0 do
-    chromosome = for gene <- 0..length-1, into: Array.new, do: gene
+    chromosome = for gene <- 0..length - 1, into: Array.new, do: gene
     %Individual{chromosome: chromosome}
   end
 
@@ -27,7 +27,7 @@ defmodule Individual do
   Retrieves the gene at the specified offset from the chromosome
   """
 
-  def getGene(%Array{}=chromosome, offset) do
+  def getGene(%Array{} = chromosome, offset) do
     Array.get(chromosome, offset)
   end
 
@@ -35,7 +35,7 @@ defmodule Individual do
   Stores the gene at the specified offset in the chromosome.
   """
 
-  def setGene(%Array{}=chromosome, offset, gene) do
+  def setGene(%Array{} = chromosome, offset, gene) do
     Array.set(chromosome, offset, gene)
   end
 
@@ -43,7 +43,7 @@ defmodule Individual do
   Returns true if the chromosome contains the specified gene.
   """
 
-  def containsGene?(%Array{}=chromosome, gene) do
+  def containsGene?(%Array{} = chromosome, gene) do
     chromosome |> Enum.member?(gene)
   end
 
@@ -51,7 +51,7 @@ defmodule Individual do
   Swap the genes at the given positions.
   """
 
-def swapGenes(%Array{}=chromosome, pos1, pos2) do
+def swapGenes(%Array{} = chromosome, pos1, pos2) do
   tmp = chromosome |> getGene(pos1)
 
   chromosome
@@ -63,12 +63,12 @@ end
   Mutates a chromosome's genes according to the mutation rate.
   """
 
-  def mutate(%Individual{chromosome: chromosome}=individual, mutationRate) do
+  def mutate(%Individual{chromosome: chromosome} = individual, mutationRate) do
     chromosome_size = Array.size(chromosome)
 
     mutation =
       chromosome
-      |> do_mutate(chromosome_size, mutationRate, chromosome_size-1)
+      |> do_mutate(chromosome_size, mutationRate, chromosome_size - 1)
 
     %Individual{individual | chromosome: mutation}
   end
@@ -87,7 +87,7 @@ end
   Shuffles the contents of the chromosome
   """
 
-  def shuffle(%Individual{chromosome: chromosome}=individual) do
+  def shuffle(%Individual{chromosome: chromosome} = individual) do
     %Individual{individual |
       chromosome: chromosome
           |> Enum.shuffle
@@ -99,6 +99,6 @@ end
   Returns the size of the array
   """
 
-  def size(%Array{}=chromosome), do: Array.size(chromosome)
+  def size(%Array{} = chromosome), do: Array.size(chromosome)
 
 end

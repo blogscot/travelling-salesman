@@ -26,7 +26,7 @@ defmodule Cities do
   """
 
   def get_cities do
-    Enum.zip(0..length(@coordinates)-1, @coordinates)
+    Enum.zip(0..length(@coordinates) - 1, @coordinates)
     |> Enum.into(%{})
   end
 

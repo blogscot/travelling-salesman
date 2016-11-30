@@ -19,9 +19,9 @@ defmodule City do
   """
 
   def distanceFrom(%City{xPos: x1, yPos: y1}, %City{xPos: x2, yPos: y2}) do
-    deltaX = :math.pow((x1-x2), 2)
-    deltaY = :math.pow((y1-y2), 2)
-    :math.sqrt(deltaX + deltaY)
+    delta_x = :math.pow((x1 - x2), 2)
+    delta_y = :math.pow((y1 - y2), 2)
+    :math.sqrt(delta_x + delta_y)
   end
 
 end
