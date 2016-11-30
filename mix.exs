@@ -29,7 +29,8 @@ defmodule Tsp.Mixfile do
   defp deps do
     [
       {:array, github: "blogscot/elixir-array"},
-      {:credo, "~> 0.5", only: [:dev, :test]}
+      {:credo, "~> 0.5", only: [:dev, :test]},
+      {:exprof, "~> 0.2.0", only: [:dev, :test]}      
     ]
   end
 end
