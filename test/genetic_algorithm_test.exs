@@ -34,6 +34,17 @@ defmodule GeneticAlgorithmTest do
     refute new_population[0].fitness == new_population[1].fitness
   end
 
+test "All population members are subject to mutation" do
+    population = Population.new(100)
+    mutation_rate = 1
+
+    new_population = mutate(population, mutation_rate) |> Array.from_list
+    
+    for index <- 0..99, do:
+      refute population[index] == new_population[index]
+end
+
+
   test "Population members are not mutated when rate is 0" do
     mutation_rate = 0
     population = Population.new(100)
