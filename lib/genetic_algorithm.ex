@@ -107,8 +107,8 @@ end
   single offspring.
   """
 
-  def crossover(%Individual{chromosome: c1},
-                %Individual{chromosome: c2}, {start, finish}) when start <= finish do
+  def crossover(%Individual{chromosome: c1}, %Individual{chromosome: c2},
+                {start, finish}) when start <= finish do
 
     # Copy substring from first parent into offspring
     offspring = createOffspring(c1, start, finish)
@@ -125,17 +125,11 @@ end
   containing genetic material from both parents.
   """
 
-  def crossover(%Array{} = population, crossoverRate, elitismCount, tournamentSize) do
+  def crossover(%Array{} = population, crossoverRate, tournamentSize) do
     chromosome_size = population[0].chromosome |> Array.size
-    sorted_population = population |> Population.sort
-
-    elite_population =
-      sorted_population
-      |> Enum.take(elitismCount)
 
     crossover_population =
-      sorted_population
-      |> Stream.drop(elitismCount)
+      population
       |> Enum.map(fn parent1 ->
         if crossoverRate > :rand.uniform do
           parent2 = selectParent(population, tournamentSize)
@@ -151,7 +145,7 @@ end
         end
       end)
 
-    (elite_population ++ crossover_population) |> Array.from_list
+    crossover_population |> Array.from_list
   end
 
   @doc """
@@ -161,19 +155,11 @@ end
   without mutation, where n = elitismCount.
   """
 
-  def mutate(%Array{} = population, elitismCount, mutationRate) do
-    sorted_population = population |> Population.sort
-
-    elite = sorted_population |> Enum.take(elitismCount)
-
-    non_elite =
-      sorted_population
-      |> Stream.drop(elitismCount)
-      |> Enum.map(fn ind ->
-        ind |> Individual.mutate(mutationRate)
-      end)
-
-    (elite ++ non_elite) |> Array.from_list
+  def mutate(%Array{} = population, mutationRate) do
+    population
+    |> Enum.map(fn ind ->
+      ind |> Individual.mutate(mutationRate)
+    end)
   end
 
 end

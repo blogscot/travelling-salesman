@@ -34,42 +34,12 @@ defmodule GeneticAlgorithmTest do
     refute new_population[0].fitness == new_population[1].fitness
   end
 
-  test "Elite population members are not subject to mutation" do
-    elite_members = 3
-    mutation_rate = 1
-    population = Population.new(elite_members)
-
-    new_population = mutate(population, elite_members, mutation_rate)
-    assert population == new_population
-  end
-
-  test "All population members are subject to mutation" do
-    elite_members = 0
-    mutation_rate = 1
-    population = Population.new(100)
-
-    new_population = mutate(population, elite_members, mutation_rate)
-    for index <- 0..99, do:
-      refute population[index] == new_population[index]
-  end
-
-  test "Non-elite population members are subject to mutation" do
-    elite_members = 3
-    mutation_rate = 1
-    # longer chromosomes are less likely to randomly mutate into themselves
-    population = Population.new(elite_members+1, 10)
-
-    new_population = mutate(population, elite_members, mutation_rate)
-    refute population == new_population
-  end
-
   test "Population members are not mutated when rate is 0" do
-    elite_members = 0
     mutation_rate = 0
     population = Population.new(100)
 
-    new_population = mutate(population, elite_members, mutation_rate)
-    assert population == new_population
+    new_population = mutate(population, mutation_rate)
+    assert population == new_population |> Array.from_list
   end
 
   test "Offspring inherits genes from directly from its first parent" do
@@ -134,23 +104,16 @@ defmodule GeneticAlgorithmTest do
    assert crossover(parent1, parent2, {3, 6}) == offspring
   end
 
-  test "Elite population members do not experience crossover", context do
-    population = context[:population]
-    new_population = GeneticAlgorithm.crossover(population, 1, 10, 3)
-
-    assert population |> Population.sort == new_population |> Population.sort
-  end
-
   test "Population members are unchanged when crossover rate is zero", context do
     population = context[:population]
-    new_population = GeneticAlgorithm.crossover(population, 0, 3, 3)
+    new_population = GeneticAlgorithm.crossover(population, 0, 3)
 
     assert population |> Population.sort == new_population |> Population.sort
   end
 
   test "Population members are changed when crossover rate is one", context do
     population = context[:population]
-    new_population = GeneticAlgorithm.crossover(population, 1, 1, 3)
+    new_population = GeneticAlgorithm.crossover(population, 1, 3)
 
     refute population == new_population
   end
