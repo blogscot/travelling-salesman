@@ -21,7 +21,7 @@ defmodule GeneticAlgorithmTest do
   end
 
   test "Update the fitness for a population" do
-    population = Population.new(2)
+    population = Population.new(2) |> Array.from_list
 
     # Make the individuals different
     bob = population[0].chromosome |> Individual.setGene(1, 2)
@@ -29,17 +29,17 @@ defmodule GeneticAlgorithmTest do
       population
       |> Population.setIndividual(%Individual{chromosome: bob}, 0)
 
-    new_population = evaluate(changed_pop)
+    new_population = evaluate(changed_pop) |> Array.from_list
 
     refute new_population[0].fitness == new_population[1].fitness
   end
 
 test "All population members are subject to mutation" do
-    population = Population.new(100)
+    population = Population.new(100) |> Array.from_list
     mutation_rate = 1
 
     new_population = mutate(population, mutation_rate) |> Array.from_list
-    
+
     for index <- 0..99, do:
       refute population[index] == new_population[index]
 end
@@ -50,7 +50,7 @@ end
     population = Population.new(100)
 
     new_population = mutate(population, mutation_rate)
-    assert population == new_population |> Array.from_list
+    assert population == new_population
   end
 
   test "Offspring inherits genes from directly from its first parent" do

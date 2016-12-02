@@ -12,14 +12,14 @@ defmodule PopulationTest do
 
   test "Population members have the expected size" do
     expected_size = 20
-    population = Population.new(expected_size)
+    population = Population.new(expected_size) |> Array.from_list
     assert Array.size(population[0].chromosome) == expected_size
   end
 
   test "Population members have the expect chromosome length" do
     population_size = 15
     expected_size = 25
-    population = Population.new(population_size, expected_size)
+    population = Population.new(population_size, expected_size) |> Array.from_list
     assert Array.size(population[0].chromosome) == expected_size
   end
 
@@ -27,7 +27,7 @@ defmodule PopulationTest do
     population_size = 50
     bob_size = 10
     position = 3
-    population = Population.new(population_size)
+    population = Population.new(population_size) |> Array.from_list
     bob = Individual.new(bob_size)
 
     new_population = Population.setIndividual(population, bob, position)
@@ -38,7 +38,7 @@ defmodule PopulationTest do
   test "An individual in the population can be retrieved" do
     population_size = 44
 
-    population = Population.new(population_size)
+    population = Population.new(population_size) |> Array.from_list
     alice = Population.getIndividual(population, population_size-1)
     assert Array.size(alice.chromosome) == population_size  # using default chromosome length
   end
@@ -48,13 +48,16 @@ defmodule PopulationTest do
     test_item1 = 3333
     test_item2 = 4444
 
-    population = Population.new(population_size)
+    population = Population.new(population_size) |> Array.from_list
 
     # inject a few test items
     population = put_in(population[3].chromosome[3], test_item1)
     population = put_in(population[44].chromosome[44], test_item2)
 
-    new_population = population |> Population.shuffle
+    new_population =
+      population
+      |> Population.shuffle
+      |> Array.from_list
 
     assert population[3].chromosome[3] == test_item1 &&
            population[44].chromosome[44] == test_item2
@@ -63,7 +66,7 @@ defmodule PopulationTest do
   end
 
   test "A population has a fittest individual" do
-    population = Population.new(3)
+    population = Population.new(3) |> Array.from_list
 
     # Make the individuals different
     bob = population[1].chromosome |> Individual.setGene(2, 4)

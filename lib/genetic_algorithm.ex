@@ -40,7 +40,7 @@ def evaluate(population) do
   population
   |> Enum.map(fn individual ->
     updateFitness(individual)
-  end) |> Array.from_list
+  end)
 end
 
   @doc """
@@ -51,7 +51,6 @@ end
     population
     |> Population.shuffle
     |> Enum.take(tournamentSize)
-    |> Array.from_list
     |> Population.getFittest
   end
 
@@ -131,24 +130,22 @@ end
       |> List.first
       |> (fn ind -> ind.chromosome |> Array.size end).()
 
-    crossover_population =
-      population
-      |> Enum.map(fn parent1 ->
-        if crossoverRate > :rand.uniform do
-          parent2 = selectParent(population, tournamentSize)
+    population
+    |> Enum.map(fn parent1 ->
+      if crossoverRate > :rand.uniform do
+        parent2 = selectParent(population, tournamentSize)
 
-          start_finish =
-            Enum.min_max([:rand.uniform(chromosome_size) - 1,
-                          :rand.uniform(chromosome_size) - 1])
+        start_finish =
+          Enum.min_max([:rand.uniform(chromosome_size) - 1,
+                        :rand.uniform(chromosome_size) - 1])
 
-          # Create offspring
-          crossover(parent1, parent2, start_finish)
-        else
-          parent1
-        end
-      end)
+        # Create offspring
+        crossover(parent1, parent2, start_finish)
+      else
+        parent1
+      end
+    end)
 
-    crossover_population |> Array.from_list
   end
 
   @doc """
@@ -158,7 +155,7 @@ end
   without mutation, where n = elitismCount.
   """
 
-  def mutate(%Array{} = population, mutationRate) do
+  def mutate(population, mutationRate) do
     population
     |> Enum.map(fn ind ->
       ind |> Individual.mutate(mutationRate)

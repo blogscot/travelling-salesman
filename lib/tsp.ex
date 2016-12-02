@@ -64,7 +64,7 @@ defmodule Tsp do
   Note: function shared with test cases.
   """
 
-  def calculate_distance(%Array{} = population) do
+  def calculate_distance(population) do
     population
     |> Population.getFittest
     |> Route.new
