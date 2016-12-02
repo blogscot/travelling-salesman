@@ -68,10 +68,9 @@ defmodule Population do
   Note: the chromosome contents remain untouched.
   """
 
-  def shuffle(%Array{} = population) do
+  def shuffle(population) do
     population
     |> Enum.shuffle
-    |> Array.from_list
   end
 
 end

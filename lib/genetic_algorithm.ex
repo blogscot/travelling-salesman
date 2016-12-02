@@ -36,7 +36,7 @@ defmodule GeneticAlgorithm do
   Updates the fitness for each member of the population.
   """
 
-def evaluate(%Array{} = population) do
+def evaluate(population) do
   population
   |> Enum.map(fn individual ->
     updateFitness(individual)
@@ -47,7 +47,7 @@ end
   Select a parent from the population using tournament selection.
   """
 
-  def selectParent(%Array{} = population, tournamentSize) when tournamentSize > 0 do
+  def selectParent(population, tournamentSize) when tournamentSize > 0 do
     population
     |> Population.shuffle
     |> Enum.take(tournamentSize)
@@ -125,8 +125,11 @@ end
   containing genetic material from both parents.
   """
 
-  def crossover(%Array{} = population, crossoverRate, tournamentSize) do
-    chromosome_size = population[0].chromosome |> Array.size
+  def crossover(population, crossoverRate, tournamentSize) do
+    chromosome_size =
+      population
+      |> List.first
+      |> (fn ind -> ind.chromosome |> Array.size end).()
 
     crossover_population =
       population
