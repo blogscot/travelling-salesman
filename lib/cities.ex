@@ -26,8 +26,7 @@ defmodule Cities do
   """
 
   def get_cities do
-    @coordinates
-    |> Enum.into(Array.new)
+    Array.from_list(@coordinates)
   end
 
 end

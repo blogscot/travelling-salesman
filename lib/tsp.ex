@@ -5,8 +5,8 @@ defmodule Tsp do
   """
 
   @max_generation 100
-  @min_distance 800
-  @num_cities 30
+  @min_distance 70
+  @population_size 40
   @crossover_rate 0.9
   @mutation_rate 0.001
   @elitism_count 3
@@ -18,7 +18,7 @@ defmodule Tsp do
 
   def run do
     population =
-      Population.new(@num_cities)
+      Population.new(@population_size)
       |> GeneticAlgorithm.evaluate
 
     distance = calculate_distance(population)
@@ -41,7 +41,9 @@ defmodule Tsp do
     new_general_population =
       sorted_population
       |> Enum.drop(@elitism_count)
-      |> GeneticAlgorithm.crossover(@crossover_rate, @tournament_size)
+      |> GeneticAlgorithm.crossover(@population_size,
+                                    @crossover_rate,
+                                    @tournament_size)
       |> GeneticAlgorithm.mutate(@mutation_rate)
 
     new_population =

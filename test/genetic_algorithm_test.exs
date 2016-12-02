@@ -4,13 +4,13 @@ defmodule GeneticAlgorithmTest do
   import GeneticAlgorithm
 
   setup _context do
+    population_size = 10
     population =
-      Population.new(10)
+      Population.new(population_size)
       |> Enum.map(&Individual.shuffle/1)
-      |> Array.from_list
       |> GeneticAlgorithm.evaluate
 
-    {:ok, [population: population]}
+    {:ok, [population: population, population_size: population_size]}
   end
 
   test "Short distances are fitter than long distances" do
@@ -71,10 +71,10 @@ end
   test "Offspring inherit genes in an ordered mapping from its second parent" do
     offspring = [nil, nil, nil, 3, 4, 5, 6, 7, 8, nil] |> Array.from_list   # 3 to 8
     parent = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0] |> Array.from_list
-    result = [0, 9, 2, 3, 4, 5, 6, 7, 8, 1] |> Array.from_list
+    result = [9, 2, 1, 3, 4, 5, 6, 7, 8, 0] |> Array.from_list
 
     # 9, not 8,7,6,5,4,3, 2, 1, 0
-    assert insertGenes(offspring, parent, 8+1) == result
+    assert insertGenes(offspring, parent) == result
   end
 
   test "insert genes into an offspring with a single gene at end" do
@@ -82,7 +82,7 @@ end
     parent = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0] |> Array.from_list
     result = [9, 8, 7, 6, 5, 4, 2, 1, 0, 3] |> Array.from_list
 
-    assert insertGenes(offspring, parent, 9+1) == result
+    assert insertGenes(offspring, parent) == result
   end
 
   test "insert genes into offspring with multiple genes at end" do
@@ -90,15 +90,15 @@ end
     parent = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0] |> Array.from_list
     result = [9, 7, 6, 4, 3, 1, 0, 8, 2, 5] |> Array.from_list
 
-    assert insertGenes(offspring, parent, 9+1) == result
+    assert insertGenes(offspring, parent) == result
   end
 
   test "insert genes into offspring with multiple genes in middle" do
     offspring = [nil, 4, 0, 8, nil, nil, nil, nil, nil, nil] |> Array.from_list   # 1 to 3
     parent = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0] |> Array.from_list
-    result = [5, 4, 0, 8, 3, 2, 1, 9, 7, 6] |> Array.from_list
+    result = [9, 4, 0, 8, 7, 6, 5, 3, 2, 1] |> Array.from_list
 
-    assert insertGenes(offspring, parent, 3+1) == result
+    assert insertGenes(offspring, parent) == result
   end
 
   test "Ordered crossover takes genes from both parent chromosomes" do
@@ -107,7 +107,7 @@ end
     parent2 = %Individual{
       chromosome: [0, 7, 3, 9, 1, 4, 5, 2, 6, 8] |> Array.from_list}
     offspring = %Individual{
-      chromosome: [2, 8, 0, 9, 5, 6, 4, 7, 3, 1] |> Array.from_list |> Array.fix}
+      chromosome: [0, 7, 3, 9, 5, 6, 4, 1, 2, 8] |> Array.from_list |> Array.fix}
 
    # Substring from parent1, plus ordered genes from parent2
    # [_, _, _, 9, 5, 6, 4, _, _, _] from parent1
@@ -117,14 +117,18 @@ end
 
   test "Population members are unchanged when crossover rate is zero", context do
     population = context[:population]
-    new_population = GeneticAlgorithm.crossover(population, 0, 3)
+    chromosome_size = context[:population_size]
+    new_population =
+      GeneticAlgorithm.crossover(population, chromosome_size, 0, 3)
 
     assert population |> Population.sort == new_population |> Population.sort
   end
 
   test "Population members are changed when crossover rate is one", context do
     population = context[:population]
-    new_population = GeneticAlgorithm.crossover(population, 1, 3)
+    chromosome_size = context[:population_size]
+    new_population =
+      GeneticAlgorithm.crossover(population, chromosome_size, 1, 3)
 
     refute population == new_population
   end

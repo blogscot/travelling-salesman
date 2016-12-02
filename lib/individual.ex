@@ -44,7 +44,7 @@ defmodule Individual do
   """
 
   def containsGene?(%Array{} = chromosome, gene) do
-    chromosome |> Enum.member?(gene)
+    gene in chromosome
   end
 
   @doc """

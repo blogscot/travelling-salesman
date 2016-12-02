@@ -38,9 +38,7 @@ defmodule GeneticAlgorithm do
 
 def evaluate(population) do
   population
-  |> Enum.map(fn individual ->
-    updateFitness(individual)
-  end)
+  |> Enum.map(&updateFitness(&1))
 end
 
   @doc """
@@ -82,15 +80,11 @@ end
   finish   the first empty gene position following parent1 substring.
   """
 
-  def insertGenes(%{} = offspring, %{} = parent2, finish) do
-    chromosome_size = Array.size(parent2)
+  def insertGenes(%{} = offspring, %{} = parent2) do
 
-    0..chromosome_size - 1
-    |> Enum.reduce(offspring, fn index, acc ->
-      parent2_index = rem(index + finish, chromosome_size)
-      parent2_gene = parent2 |> Individual.getGene(parent2_index)
-
-      if acc |> Individual.containsGene?(parent2_gene) do
+    parent2
+    |> Enum.reduce(offspring, fn parent2_gene, acc ->
+      if parent2_gene in acc do
         acc
       else
         # find the index of the first nil value
@@ -113,8 +107,7 @@ end
     offspring = createOffspring(c1, start, finish)
 
     # Insert remaining genes (in order) from parent2 into offspring
-    offspring_chromosome = insertGenes(offspring, c2, finish + 1)
-
+    offspring_chromosome = insertGenes(offspring, c2)
     %Individual{chromosome: offspring_chromosome}
   end
 
@@ -124,11 +117,7 @@ end
   containing genetic material from both parents.
   """
 
-  def crossover(population, crossoverRate, tournamentSize) do
-    chromosome_size =
-      population
-      |> List.first
-      |> (fn ind -> ind.chromosome |> Array.size end).()
+  def crossover(population, chromosome_size, crossoverRate, tournamentSize) do
 
     population
     |> Enum.map(fn parent1 ->
