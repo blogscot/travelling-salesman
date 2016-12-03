@@ -6,7 +6,7 @@ defmodule Tsp do
 
   @max_generation 100
   @min_distance 70
-  @population_size 40
+  @population_size 80
   @crossover_rate 0.9
   @mutation_rate 0.001
   @elitism_count 3
