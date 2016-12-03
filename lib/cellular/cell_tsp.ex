@@ -1,16 +1,17 @@
-defmodule Tsp do
+defmodule Cellular.Tsp do
 
   @moduledoc """
   The main module for the Travelling Salesman Problem
   """
 
   @max_generation 100
-  @min_distance 70
-  @population_size 50
+  @min_distance 600
+  @population_size 30
   @crossover_rate 0.9
   @mutation_rate 0.001
   @elitism_count 3
   @tournament_size 5
+  @number_workers 4
 
   @doc """
   The entry point for the TSP algorithm.
@@ -24,27 +25,53 @@ defmodule Tsp do
     distance = calculate_distance(population)
     IO.puts("Start Distance: #{distance}")
 
-    process_population(population, 1, distance)
+    # Create worker pool
+    pool = Enum.map(1..@number_workers, fn _ -> spawn(&mutate_population/0) end)
+
+    process_population(population, pool, 1, distance)
   end
 
-  defp process_population(_population, generation, distance)
+  def mutate_population do
+    receive do
+      {:individual, individual, from} ->
+        send(from, {:mutated, individual |> Individual.mutate(@mutation_rate)})
+        mutate_population
+    end
+  end
+
+  defp start_worker({individual, worker_pid}) do
+    send(worker_pid, {:individual, individual, self})
+  end
+
+defp await_result(_) do
+  receive do
+    {:mutated, individual} -> individual
+  end
+end
+
+  defp process_population(_population, _pool, generation, distance)
     when @min_distance >= distance do
       IO.puts("Stopped after #{generation} generations.")
       IO.puts("Best Distance: #{distance}")
   end
 
-  defp process_population(population, generation, distance) do
+  defp process_population(population, pool, generation, distance) do
     {elite_population, common_population} =
       population
       |> Population.sort
       |> Enum.split(@elitism_count)
 
-    new_general_population =
+    crossover_population =
       common_population
       |> GeneticAlgorithm.crossover(@population_size,
                                     @crossover_rate,
                                     @tournament_size)
-      |> GeneticAlgorithm.mutate(@mutation_rate)
+
+    new_general_population =
+      crossover_population
+      |> Enum.zip(Stream.cycle(pool))
+      |> Enum.map(&start_worker/1)
+      |> Enum.map(&await_result/1)
 
     new_population =
       elite_population ++ new_general_population
@@ -56,7 +83,7 @@ defmodule Tsp do
       IO.puts("G#{generation} Best Distance: #{distance}")
     end
 
-    process_population(new_population, generation + 1, new_distance)
+    process_population(new_population, pool, generation + 1, new_distance)
   end
 
   @doc """

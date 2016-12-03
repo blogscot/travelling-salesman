@@ -4,7 +4,7 @@ defmodule Profiler do
   @doc "analyze with profile macro"
   def do_analyze do
     profile do
-      Tsp.run
+      Cellular.Tsp.run
     end
   end
 

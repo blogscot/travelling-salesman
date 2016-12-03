@@ -1,6 +1,6 @@
 defmodule Benchmark do
 
-@logfile "seq_logfile"
+@logfile "benchmark_results.txt"
 
   @moduledoc """
   Performs basic benchmarking activities, i.e. running the TSP algorithms
@@ -11,14 +11,14 @@ defmodule Benchmark do
   Runs and displays the time taken for  the TSP algorithm.
   """
 
-  def measure(file) do
-    (fn -> Tsp.run end)
+  def measure(run, file) do
+    (fn -> Cellular.Tsp.run end)
     |> :timer.tc
     |> elem(0)
     |> Kernel./(1_000_000)
     |> (fn duration ->
       {{year, month, day}, {hour, mins, secs}} = :calendar.local_time
-      text = "#{day}/#{month}/#{year} #{hour}:#{pad(mins)}:#{pad(secs)} The algorithm ran in #{duration} seconds."
+      text = "Run #{run}: (#{day}/#{month}/#{year} #{hour}:#{pad(mins)}:#{pad(secs)}) The algorithm ran in #{duration} seconds."
       IO.puts(text)
       IO.puts(file, text)
     end).()
@@ -31,7 +31,7 @@ defmodule Benchmark do
   def run(count \\ 1) do
 
     {:ok, file} = File.open(@logfile, [:read, :utf8, :append])
-    for _ <- 1..count, do: measure(file)
+    for run <- 1..count, do: measure(run, file)
     File.close(file)
   end
 
