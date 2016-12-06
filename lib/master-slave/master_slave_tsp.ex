@@ -101,3 +101,4 @@ defmodule MasterSlave.Tsp do
     |> Route.getDistance
   end
 end
+
