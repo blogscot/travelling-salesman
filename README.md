@@ -6,7 +6,9 @@ The Travelling Salesman Problem, implemented using Elixir.
 
 To profile the algorithm using `fprof` you can use the following command:
 
+```
 mix profile.fprof --details --callers --sort=own -e Tsp.run > output.txt
+```
 
 As `fprof` is a fairly intensive profiler its better to only run the algorithm for a small number of generations using the following settings:
 
