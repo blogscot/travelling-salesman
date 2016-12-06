@@ -5,8 +5,8 @@ defmodule Cellular.Tsp do
   """
 
   @max_generation 100
-  @min_distance 600
-  @population_size 30
+  @min_distance 800
+  @population_size 50
   @crossover_rate 0.9
   @mutation_rate 0.001
   @elitism_count 3

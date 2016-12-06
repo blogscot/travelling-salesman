@@ -1,4 +1,5 @@
 defmodule Cities do
+
   @moduledoc """
   Contains a fixed list of city positions, stored as x, y grid positions, used
   for performance testing purposes.

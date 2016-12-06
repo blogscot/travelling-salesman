@@ -1,4 +1,5 @@
 defmodule Population do
+
   @moduledoc """
   A population is a collection of chromosomes (aka individuals).
   """

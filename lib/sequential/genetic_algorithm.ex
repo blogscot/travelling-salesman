@@ -5,19 +5,6 @@ defmodule GeneticAlgorithm do
   evaluate, crossover and mutate.
   """
 
-
-  @doc """
-  Creates the initial population of candidate solutions, each
-  chromosome having the specified length.
-
-    population_size     number of candidate solutions
-    chromosome_length   length of chromosome
-  """
-
-  def initialise(population_size, chromosome_length) do
-    Population.new(population_size, chromosome_length)
-  end
-
   @doc """
   Calculates the fitness of a candidate solution.
   """

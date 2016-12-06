@@ -15,7 +15,11 @@ defmodule Individual do
   """
 
   def new(length) when length > 0 do
-    chromosome = for gene <- 0..length - 1, into: Array.new, do: gene
+    chromosome =
+      0..length - 1
+      |> Enum.to_list
+      |> Array.from_list
+
     %Individual{chromosome: chromosome}
   end
 
