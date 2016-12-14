@@ -12,7 +12,9 @@ defmodule Route do
   def new(%Individual{chromosome: chromosome}) do
     cities = Cities.get_cities
 
-    for gene <- chromosome do
+    # its more efficient to iterate over lists than arrays
+    list = chromosome |> Array.to_list
+    for gene <- list do
       cities[gene]
       |> City.new
       end
