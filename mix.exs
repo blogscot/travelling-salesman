@@ -31,8 +31,7 @@ defmodule Tsp.Mixfile do
       {:array, github: "blogscot/elixir-array"},
       {:credo, "~> 0.5", only: [:dev, :test]},
       {:exprof, "~> 0.2.0", only: [:dev, :test]},
-      {:benchfella, "~> 0.3.0"},
-      {:bmark, "~> 1.0.0"}
+      {:benchfella, "~> 0.3.0"}
     ]
   end
 end
