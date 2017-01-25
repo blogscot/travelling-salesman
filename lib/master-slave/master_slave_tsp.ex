@@ -4,12 +4,12 @@ defmodule MasterSlave.Tsp do
   The main module for the Travelling Salesman Problem
   """
 
-  @max_generation 100
-  @min_distance 80
-  @population_size 80
-  @crossover_rate 0.9
+  # @max_generation 100
+  @min_distance 1100
+  @population_size 100
+  @crossover_rate 0.95
   @mutation_rate 0.001
-  @elitism_count 3
+  @elitism_count 5
   @tournament_size 5
   @number_workers 4
 
@@ -31,6 +31,8 @@ defmodule MasterSlave.Tsp do
     process_population(population, pool, 1, distance)
   end
 
+  # Perform crossover and mutation of a sub-population
+
   def crossover_population do
     receive do
       {:population, population, from} ->
@@ -41,13 +43,17 @@ defmodule MasterSlave.Tsp do
                                         @tournament_size)
           |> GeneticAlgorithm.mutate(@mutation_rate)
           })
-        crossover_population
+        crossover_population()
     end
   end
 
+  # Sends sub-population to worker process.
+
   defp start_worker({population, worker_pid}) do
-    send(worker_pid, {:population, population, self})
+    send(worker_pid, {:population, population, self()})
   end
+
+  # Waits for the response from the worker process.
 
   defp await_result(_) do
     receive do
