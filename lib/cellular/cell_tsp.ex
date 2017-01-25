@@ -21,20 +21,17 @@ defmodule Cellular.Tsp do
 
   # @max_generation 100
   @min_distance 800
-  @population_size 50
+  @population_size 100
   @crossover_rate 0.9
   @mutation_rate 0.001
   @elitism_count 3
   @tournament_size 5
-  @number_workers 4
-
-  @nodes [:"node2@127.0.0.1"]
 
   @doc """
   The entry point for the TSP algorithm.
   """
   def run do
-    pool = create_worker_pool()
+    pool = Cluster.create_worker_pool(&mutate_individual/0)
 
     population =
       Population.new(@population_size)
@@ -46,32 +43,9 @@ defmodule Cellular.Tsp do
     process_population(population, pool, 1, distance)
   end
 
-  # Creates a pool of worker processes
-
-  defp create_worker_pool do
-    connect_nodes()
-    Enum.map(1..@number_workers, fn _ -> spawn(&mutate_individual/0) end)
-  end
-
-  # Connects to remote nodes
-  # Raises a runtime error if any node fails to connect
-
-  defp connect_nodes do
-    status = for node <- @nodes, do: Node.connect(node)
-
-    # Are all nodes connected?
-    case Enum.all?(status, &(&1)) do
-      true ->
-       status
-      false ->
-        raise "Unable to connect to remote nodes, status: #{inspect status}"
-    end
-
-  end
-
   # Mutates the received individual, returning the result back to sender.
 
-  def mutate_individual do
+  defp mutate_individual do
     receive do
       {:individual, individual, from} ->
         send(from, {:mutated, individual |> Individual.mutate(@mutation_rate)})
