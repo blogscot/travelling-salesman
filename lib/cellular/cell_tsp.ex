@@ -4,7 +4,7 @@ defmodule Cellular.Tsp do
   The main module for the Travelling Salesman Problem
   """
 
-  @max_generation 100
+  # @max_generation 100
   @min_distance 800
   @population_size 50
   @crossover_rate 0.9
@@ -13,10 +13,10 @@ defmodule Cellular.Tsp do
   @tournament_size 5
   @number_workers 4
 
+
   @doc """
   The entry point for the TSP algorithm.
   """
-
   def run do
     population =
       Population.new(@population_size)
@@ -26,28 +26,34 @@ defmodule Cellular.Tsp do
     IO.puts("Start Distance: #{distance}")
 
     # Create worker pool
-    pool = Enum.map(1..@number_workers, fn _ -> spawn(&mutate_population/0) end)
+    pool = Enum.map(1..@number_workers, fn _ -> spawn(&mutate_individual/0) end)
 
     process_population(population, pool, 1, distance)
   end
 
-  def mutate_population do
+  # Mutates the received individual, returning the result back to sender.
+
+  def mutate_individual do
     receive do
       {:individual, individual, from} ->
         send(from, {:mutated, individual |> Individual.mutate(@mutation_rate)})
-        mutate_population
+        mutate_individual()
     end
   end
 
+  # Sends a individual to be mutated by a pool worker.
+
   defp start_worker({individual, worker_pid}) do
-    send(worker_pid, {:individual, individual, self})
+    send(worker_pid, {:individual, individual, self()})
   end
 
-defp await_result(_) do
-  receive do
-    {:mutated, individual} -> individual
+  # Waits for a mutated response message.
+
+  defp await_result(_) do
+    receive do
+      {:mutated, individual} -> individual
+    end
   end
-end
 
   defp process_population(_population, _pool, generation, distance)
     when @min_distance >= distance do
@@ -85,6 +91,7 @@ end
 
     process_population(new_population, pool, generation + 1, new_distance)
   end
+
 
   @doc """
   Calculates the shortest distance (using the best candidate solution) for
