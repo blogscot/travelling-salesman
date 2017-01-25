@@ -1,7 +1,22 @@
 defmodule Cellular.Tsp do
 
   @moduledoc """
-  The main module for the Travelling Salesman Problem
+  The main module for the Travelling Salesman Problem.
+
+  The cellular algorithm run across a distributed cluster which
+  must be set up prior to execution. The distributed nodes may
+  be located on the same machine, or alternatively on machines
+  accessible via their IP addresses.
+
+  To connect to local nodes set up the cluster using short names:
+
+  iex --sname node1 --cookie fudge
+  iex --sname node2 --cookie fudge
+
+  To connect to remote nodes use the following commands:
+
+  iex --name node1@127.0.0.1 --cookie fudge -S mix
+  iex --name node2@127.0.0.1 --cookie fudge -S mix
   """
 
   # @max_generation 100
@@ -13,11 +28,14 @@ defmodule Cellular.Tsp do
   @tournament_size 5
   @number_workers 4
 
+  @nodes [:"node2@127.0.0.1"]
 
   @doc """
   The entry point for the TSP algorithm.
   """
   def run do
+    pool = create_worker_pool()
+
     population =
       Population.new(@population_size)
       |> GeneticAlgorithm.evaluate
@@ -25,10 +43,30 @@ defmodule Cellular.Tsp do
     distance = calculate_distance(population)
     IO.puts("Start Distance: #{distance}")
 
-    # Create worker pool
-    pool = Enum.map(1..@number_workers, fn _ -> spawn(&mutate_individual/0) end)
-
     process_population(population, pool, 1, distance)
+  end
+
+  # Creates a pool of worker processes
+
+  defp create_worker_pool do
+    connect_nodes()
+    Enum.map(1..@number_workers, fn _ -> spawn(&mutate_individual/0) end)
+  end
+
+  # Connects to remote nodes
+  # Raises a runtime error if any node fails to connect
+
+  defp connect_nodes do
+    status = for node <- @nodes, do: Node.connect(node)
+
+    # Are all nodes connected?
+    case Enum.all?(status, &(&1)) do
+      true ->
+       status
+      false ->
+        raise "Unable to connect to remote nodes, status: #{inspect status}"
+    end
+
   end
 
   # Mutates the received individual, returning the result back to sender.

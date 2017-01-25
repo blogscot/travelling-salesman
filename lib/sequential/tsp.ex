@@ -4,7 +4,7 @@ defmodule Tsp do
   The main module for the Travelling Salesman Problem
   """
 
-  @max_generation 100
+  # @max_generation 100
   @min_distance 70
   @population_size 50
   @crossover_rate 0.9
