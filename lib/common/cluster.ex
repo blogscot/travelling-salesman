@@ -10,8 +10,6 @@ defmodule Cluster do
   @doc """
   Creates a pool of worker processes on local machine and remote machines
   using the passed function.
-
-  TODO: expand for multiple nodes
   """
   def create_worker_pool(fun) do
 
@@ -21,10 +19,9 @@ defmodule Cluster do
     local_processes = Enum.map(1..@number_workers,
       fn _ -> spawn(fun) end)
 
-    node2 = List.first(connected_nodes)
-
-    remote_processes = Enum.map(1..@number_workers,
-      fn _ -> Node.spawn(node2, fun) end)
+    # Spawn remote processes on all connected nodes
+    remote_processes = for node <- connected_nodes,
+      _ <- 1..@number_workers, do: Node.spawn(node, fun)
 
     local_processes ++ remote_processes
   end
