@@ -16,6 +16,7 @@ defmodule Cities do
                 {26,44}, {42,10}, {52,66}, {39,86}, {14,67}, {86,78}, {24,17}, {38,73}, {22,39}, {78,51},
                 {86,70}, {67,45}, {36,4}, {73,95}, {27,89}, {18,49}, {8,77}, {14,94}, {65,24}, {70,16}]
 
+
   @doc """
   Returns the city data in an indexable map structure.
 
@@ -25,7 +26,6 @@ defmodule Cities do
   iex(2)> Cities.get_cities[3]
   {30, 65}
   """
-
   def get_cities do
     Array.from_list(@coordinates)
   end

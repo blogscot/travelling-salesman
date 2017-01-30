@@ -12,10 +12,10 @@ defmodule Tsp do
   @elitism_count 3
   @tournament_size 5
 
+
   @doc """
   The entry point for the TSP algorithm.
   """
-
   def run do
     population =
       Population.new(@population_size)
@@ -27,11 +27,13 @@ defmodule Tsp do
     process_population(population, 1, distance)
   end
 
+
   defp process_population(_population, generation, distance)
     when @min_distance >= distance do
       IO.puts("Stopped after #{generation} generations.")
       IO.puts("Best Distance: #{distance}")
   end
+
 
   defp process_population(population, generation, distance) do
     {elite_population, common_population} =
@@ -59,13 +61,13 @@ defmodule Tsp do
     process_population(new_population, generation + 1, new_distance)
   end
 
+
   @doc """
   Calculates the shortest distance (using the best candidate solution) for
   the given population.
 
   Note: function shared with test cases.
   """
-
   def calculate_distance(population) do
     population
     |> Population.getFittest

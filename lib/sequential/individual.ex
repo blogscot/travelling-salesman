@@ -7,13 +7,13 @@ defmodule Individual do
   The suitability of the solution is given by its fitness value.
   """
 
+
   @doc """
   Creates a new chromosome of the specified length.
   City genes are in the range 0,1,2 .. number of cities -1
 
   Returns the chromosome with an uninitialised fitness variable
   """
-
   def new(length) when length > 0 do
     chromosome =
       0..length - 1
@@ -27,46 +27,46 @@ defmodule Individual do
     %Individual{chromosome: Array.new(length)}
   end
 
+
   @doc """
   Retrieves the gene at the specified offset from the chromosome
   """
-
   def getGene(%Array{} = chromosome, offset) do
     Array.get(chromosome, offset)
   end
 
+
   @doc """
   Stores the gene at the specified offset in the chromosome.
   """
-
   def setGene(%Array{} = chromosome, offset, gene) do
     Array.set(chromosome, offset, gene)
   end
 
+
   @doc """
   Returns true if the chromosome contains the specified gene.
   """
-
   def containsGene?(%Array{} = chromosome, gene) do
     gene in chromosome
   end
 
+
   @doc """
-  Swap the genes at the given positions.
+  Swaps the genes at the given positions.
   """
+  def swapGenes(%Array{} = chromosome, pos1, pos2) do
+    tmp = chromosome |> getGene(pos1)
 
-def swapGenes(%Array{} = chromosome, pos1, pos2) do
-  tmp = chromosome |> getGene(pos1)
+    chromosome
+    |> setGene(pos1, chromosome |> getGene(pos2))
+    |> setGene(pos2, tmp)
+  end
 
-  chromosome
-  |> setGene(pos1, chromosome |> getGene(pos2))
-  |> setGene(pos2, tmp)
-end
 
   @doc """
   Mutates a chromosome's genes according to the mutation rate.
   """
-
   def mutate(%Individual{chromosome: chromosome} = individual, mutationRate) do
     chromosome_size = Array.size(chromosome)
 
@@ -87,10 +87,10 @@ end
     end
   end
 
+
   @doc """
   Shuffles the contents of the chromosome
   """
-
   def shuffle(%Individual{chromosome: chromosome} = individual) do
     %Individual{individual |
       chromosome: chromosome
@@ -99,10 +99,10 @@ end
     }
   end
 
+
   @doc """
   Returns the size of the array
   """
-
   def size(%Array{} = chromosome), do: Array.size(chromosome)
 
 end

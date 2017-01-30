@@ -4,11 +4,11 @@ defmodule Route do
   Each Route is a possible path through the list of cities.
   """
 
+
   @doc """
   Decodes the chromosome replacing each gene with
   a new city instance.
   """
-
   def new(%Individual{chromosome: chromosome}) do
     cities = Cities.get_cities
 
@@ -17,13 +17,13 @@ defmodule Route do
     for gene <- list do
       cities[gene]
       |> City.new
-      end
+    end
   end
+
 
   @doc """
   Calculates the total distance for a route.
   """
-
   def getDistance(route) when is_list(route) do
     route
     |> Enum.chunk(2, 1)

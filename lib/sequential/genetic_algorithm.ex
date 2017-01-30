@@ -5,10 +5,10 @@ defmodule GeneticAlgorithm do
   evaluate, crossover and mutate.
   """
 
+
   @doc """
   Calculates the fitness of a candidate solution.
   """
-
   def updateFitness(%Individual{} = individual) do
     distance =
       individual
@@ -19,19 +19,19 @@ defmodule GeneticAlgorithm do
     %Individual{individual | fitness:  1 / distance}
   end
 
+
   @doc """
   Updates the fitness for each member of the population.
   """
+  def evaluate(population) do
+    population
+    |> Enum.map(&updateFitness(&1))
+  end
 
-def evaluate(population) do
-  population
-  |> Enum.map(&updateFitness(&1))
-end
 
   @doc """
-  Select a parent from the population using tournament selection.
+  Selects a parent from the population using tournament selection.
   """
-
   def selectParent(population, tournamentSize) when tournamentSize > 0 do
     population
     |> Population.shuffle
@@ -39,11 +39,11 @@ end
     |> Population.getFittest
   end
 
+
   @doc """
-  Create a partial offspring chromosome with genes taken from the first parent
+  Creates a partial offspring chromosome with genes taken from the first parent
   using the given start and finish indices.
   """
-
   def createOffspring(%Array{} = parent_chromosome, start, finish) do
     size = Array.size(parent_chromosome)
     offspring = Individual.offspring(size)
@@ -59,6 +59,7 @@ end
     end)
   end
 
+
   @doc """
   Inserts genes from the second parent into a partial offspring (i.e. genes
   from first parent only) while preserving the gene ordering in the second
@@ -66,7 +67,6 @@ end
 
   finish   the first empty gene position following parent1 substring.
   """
-
   def insertGenes(%{} = offspring, %{} = parent2) do
 
     parent2
@@ -82,11 +82,11 @@ end
     end)
   end
 
+
   @doc """
   Applies the genetic crossover operator to two parents producing a
   single offspring.
   """
-
   def crossover(%Individual{chromosome: c1}, %Individual{chromosome: c2},
                 {start, finish}) when start <= finish do
 
@@ -98,12 +98,12 @@ end
     %Individual{chromosome: offspring_chromosome}
   end
 
+
   @doc """
-  The genetic operator crossover is applied to members of the population
+  Applies genetic operator crossover to members of the population
   by selecting two parents which then reproduce to create a new offspring,
   containing genetic material from both parents.
   """
-
   def crossover(population, chromosome_size, crossoverRate, tournamentSize) do
 
     population
@@ -121,8 +121,8 @@ end
         parent1
       end
     end)
-
   end
+
 
   @doc """
   Mutates members of the population according to the mutation rate.
@@ -130,7 +130,6 @@ end
   Note: the first n fittest members are allowed into the new population
   without mutation, where n = elitismCount.
   """
-
   def mutate(population, mutationRate) do
     population
     |> Enum.map(fn ind ->

@@ -14,7 +14,7 @@ defmodule Tsp.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :array]]
   end
 
   # Dependencies can be Hex packages:
@@ -31,7 +31,9 @@ defmodule Tsp.Mixfile do
       {:array, github: "blogscot/elixir-array"},
       {:credo, "~> 0.5", only: [:dev, :test]},
       {:exprof, "~> 0.2.0", only: [:dev, :test]},
-      {:benchfella, "~> 0.3.0"}
+      {:benchfella, "~> 0.3.0", only: :dev},
+      {:earmark, "~> 1.1", only: :dev},
+      {:ex_doc, "~> 0.14", only: :dev}
     ]
   end
 end
