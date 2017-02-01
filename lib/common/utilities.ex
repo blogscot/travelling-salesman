@@ -1,5 +1,16 @@
 defmodule Utilities do
 
+  @moduledoc """
+  This module contains shared utility functions.
+  """
+
+  @doc """
+  Divides a list into n subdivided lists.
+
+  iex(2)> Utilities.divide([0,1,2,3,4,5,6,7,8,9], 3)
+  [[7, 4, 1], [6, 5, 0], [9, 8, 3, 2]]
+
+  """
   def divide(list, n), do:
     do_divide(list, List.duplicate([], n), [])
 
