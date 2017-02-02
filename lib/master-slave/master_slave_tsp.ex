@@ -4,29 +4,26 @@ defmodule MasterSlave.Tsp do
   The main module for the Travelling Salesman Problem
   """
 
-  # @max_generation 100
-  @min_distance 1100
-  @population_size 100
+  @min_distance 900
+  @population_size 60
   @crossover_rate 0.95
   @mutation_rate 0.001
-  @elitism_count 5
+  @elitism_count 3
   @tournament_size 5
-  @number_workers 4
 
   @doc """
   The entry point for the TSP algorithm.
   """
 
   def run do
+    pool = Cluster.create_worker_pool(&crossover_population/0)
+
     population =
       Population.new(@population_size)
       |> GeneticAlgorithm.evaluate
 
     distance = calculate_distance(population)
     IO.puts("Start Distance: #{distance}")
-
-    # Create worker pool
-    pool = Enum.map(1..@number_workers, fn _ -> spawn(&crossover_population/0) end)
 
     process_population(population, pool, 1, distance)
   end
@@ -75,7 +72,7 @@ defmodule MasterSlave.Tsp do
 
     new_general_population =
       common_population
-      |> Utilities.divide(@number_workers)
+      |> Utilities.divide(Cluster.number_workers())
       |> Enum.zip(Stream.cycle(pool))
       |> Enum.map(&start_worker/1)
       |> Enum.flat_map(&await_result/1)

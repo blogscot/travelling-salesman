@@ -45,4 +45,9 @@ defmodule Cluster do
     end
   end
 
+  @doc """
+  Returns the number of workers based on the number of processor cores.
+  """
+  def number_workers, do: @number_workers
+
 end

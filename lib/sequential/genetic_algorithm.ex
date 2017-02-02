@@ -87,9 +87,7 @@ defmodule GeneticAlgorithm do
   Applies the genetic crossover operator to two parents producing a
   single offspring.
   """
-  def crossover(%Individual{chromosome: c1}, %Individual{chromosome: c2},
-                {start, finish}) when start <= finish do
-
+  def crossover(%Individual{chromosome: c1}, %Individual{chromosome: c2}, {start, finish}) do
     # Copy substring from first parent into offspring
     offspring = createOffspring(c1, start, finish)
 
