@@ -19,9 +19,8 @@ defmodule Cellular.Tsp do
   iex --name node2@127.0.0.1 --cookie fudge -S mix
   """
 
-  # @max_generation 100
-  @min_distance 800
-  @population_size 100
+  @min_distance 900
+  @population_size 60
   @crossover_rate 0.9
   @mutation_rate 0.001
   @elitism_count 3

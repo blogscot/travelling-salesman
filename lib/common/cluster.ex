@@ -5,6 +5,7 @@ defmodule Cluster do
   """
 
   @number_workers :erlang.system_info(:logical_processors)
+  @number_nodes 2
 
 
   @doc """
@@ -13,23 +14,21 @@ defmodule Cluster do
   """
   def create_worker_pool(fun) do
 
-    # Before spawning remote worker processes we need to be connected!
-    connected_nodes = connect()
+    # Before spawning worker processes we need to be connected!
+    connected_nodes = connect_nodes()
 
-    local_processes = Enum.map(1..@number_workers,
-      fn _ -> spawn(fun) end)
+    IO.inspect(connected_nodes)
 
-    # Spawn remote processes on all connected nodes
-    remote_processes = for node <- connected_nodes,
+    # Spawn processes on all connected nodes
+    for node <- connected_nodes,
       _ <- 1..@number_workers, do: Node.spawn(node, fun)
 
-    local_processes ++ remote_processes
   end
+
 
   # Connects to remote nodes defined in the config file.
   # Raises a runtime error if any node fails to connect.
-
-  defp connect do
+  defp connect_nodes do
     # Read remote node info from config
     nodes = Application.get_env(:tsp, :nodes)
 
@@ -46,8 +45,9 @@ defmodule Cluster do
   end
 
   @doc """
-  Returns the number of workers based on the number of processor cores.
+  Returns the number of workers processes.
+  This is processor cores * number of nodes.
   """
-  def number_workers, do: @number_workers
+  def number_workers, do: @number_workers * @number_nodes
 
 end

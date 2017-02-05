@@ -7,7 +7,7 @@ defmodule Benchmark do
   multiple times, saving the timing results to log file.
   """
 
-  @algorithm &Tsp.run/0
+  @algorithm &MasterSlave.Tsp.run/0
 
   # Measures the time taken to execute the given function.
 

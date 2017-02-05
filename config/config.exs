@@ -22,7 +22,9 @@ use Mix.Config
 #
 
 config :tsp, nodes: [
-  :"node2@127.0.0.1"
+   :"node1@192.168.56.101",
+   :"node2@192.168.56.102",
+  # :"node2@127.0.0.1"
 ]
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment

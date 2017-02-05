@@ -11,10 +11,10 @@ defmodule MasterSlave.Tsp do
   @elitism_count 3
   @tournament_size 5
 
+
   @doc """
   The entry point for the TSP algorithm.
   """
-
   def run do
     pool = Cluster.create_worker_pool(&crossover_population/0)
 
@@ -29,39 +29,14 @@ defmodule MasterSlave.Tsp do
   end
 
   # Perform crossover and mutation of a sub-population
-
-  def crossover_population do
-    receive do
-      {:population, population, from} ->
-        send(from, {:crossedover,
-          population
-          |> GeneticAlgorithm.crossover(@population_size,
-                                        @crossover_rate,
-                                        @tournament_size)
-          |> GeneticAlgorithm.mutate(@mutation_rate)
-          })
-        crossover_population()
-    end
-  end
-
-  # Sends sub-population to worker process.
-
-  defp start_worker({population, worker_pid}) do
-    send(worker_pid, {:population, population, self()})
-  end
-
-  # Waits for the response from the worker process.
-
-  defp await_result(_) do
-    receive do
-      {:crossedover, population} -> population
-    end
-  end
-
-  defp process_population(_population, _pool, generation, distance)
+  defp process_population(_population, pool, generation, distance)
     when @min_distance >= distance do
-      IO.puts("Stopped after #{generation} generations.")
-      IO.puts("Best Distance: #{distance}")
+
+    IO.puts("Stopped after #{generation} generations.")
+    IO.puts("Best Distance: #{distance}")
+
+    # Clean up resources
+    pool |> Enum.map(&stop_worker/1)
   end
 
   defp process_population(population, pool, generation, distance) do
@@ -90,6 +65,40 @@ defmodule MasterSlave.Tsp do
     process_population(new_population, pool, generation + 1, new_distance)
   end
 
+  def crossover_population do
+    receive do
+      {:population, population, from} ->
+        send(from, {:crossedover,
+                    population
+                    |> GeneticAlgorithm.crossover(@population_size,
+                    @crossover_rate,
+                    @tournament_size)
+                    |> GeneticAlgorithm.mutate(@mutation_rate)
+                   })
+        crossover_population()
+      {:done, _from} ->
+        :ok
+    end
+  end
+
+  # Sends sub-population to worker process.
+  defp start_worker({population, worker_pid}) do
+    send(worker_pid, {:population, population, self()})
+  end
+
+  defp stop_worker(worker_pid) do
+    send(worker_pid, {:done, self()})
+  end
+
+  # Waits for the response from the worker process.
+  defp await_result(_) do
+    receive do
+      {:crossedover, population} ->
+        population
+    end
+  end
+
+
   @doc """
   Calculates the shortest distance (using the best candidate solution) for
   the given population.
@@ -104,4 +113,3 @@ defmodule MasterSlave.Tsp do
     |> Route.getDistance
   end
 end
-
