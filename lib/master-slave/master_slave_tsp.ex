@@ -47,7 +47,7 @@ defmodule MasterSlave.Tsp do
 
     new_general_population =
       common_population
-      |> Utilities.divide(Cluster.number_workers())
+      |> Utilities.divide(length(pool))
       |> Enum.zip(Stream.cycle(pool))
       |> Enum.map(&start_worker/1)
       |> Enum.flat_map(&await_result/1)

@@ -5,8 +5,6 @@ defmodule Cluster do
   """
 
   @number_workers :erlang.system_info(:logical_processors)
-  @number_nodes 2
-
 
   @doc """
   Creates a pool of worker processes on local machine and remote machines
@@ -29,9 +27,8 @@ defmodule Cluster do
   # Connects to remote nodes defined in the config file.
   # Raises a runtime error if any node fails to connect.
   defp connect_nodes do
-    # Read remote node info from config
+    # Reads the node info from config.exs
     nodes = Application.get_env(:tsp, :nodes)
-
     status = for node <- nodes, do: Node.connect(node)
 
     # Are all nodes connected?
@@ -43,11 +40,5 @@ defmodule Cluster do
         raise "Unable to connect to remote nodes, status: #{inspect status}"
     end
   end
-
-  @doc """
-  Returns the number of workers processes.
-  This is processor cores * number of nodes.
-  """
-  def number_workers, do: @number_workers * @number_nodes
 
 end
