@@ -32,6 +32,7 @@ defmodule Tsp.Mixfile do
       {:credo, "~> 0.5", only: [:dev, :test]},
       {:exprof, "~> 0.2.0", only: [:dev, :test]},
       {:benchfella, "~> 0.3.0", only: :dev},
+      {:logger_file_backend, "~> 0.0.9", only: :dev},
       {:earmark, "~> 1.1", only: :dev},
       {:ex_doc, "~> 0.14", only: :dev}
     ]

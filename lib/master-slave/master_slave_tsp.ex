@@ -1,4 +1,5 @@
 defmodule MasterSlave.Tsp do
+  require Logger
 
   @moduledoc """
   The main module for the Travelling Salesman Problem
@@ -7,7 +8,7 @@ defmodule MasterSlave.Tsp do
   @min_distance 900
   @population_size 60
   @crossover_rate 0.95
-  @mutation_rate 0.001
+  @mutation_rate 0.005
   @elitism_count 3
   @tournament_size 5
 
@@ -34,6 +35,8 @@ defmodule MasterSlave.Tsp do
 
     IO.puts("Stopped after #{generation} generations.")
     IO.puts("Best Distance: #{distance}")
+
+    Logger.info("Test completed after #{generation} generations")
 
     # Clean up resources
     pool |> Enum.map(&stop_worker/1)
