@@ -4,7 +4,12 @@ defmodule Cluster do
   Functions for managing a cluster of distributed machines
   """
 
-  @number_workers :erlang.system_info(:logical_processors)
+  # @number_workers :erlang.system_info(:logical_processors)
+  @number_workers 2
+
+  def number_workers, do: @number_workers
+  def get_nodes, do: Application.get_env(:tsp, :nodes)
+  def number_nodes, do: length(get_nodes())
 
   @doc """
   Creates a pool of worker processes on local machine and remote machines
@@ -14,8 +19,6 @@ defmodule Cluster do
 
     # Before spawning worker processes we need to be connected!
     connected_nodes = connect_nodes()
-
-    IO.inspect(connected_nodes)
 
     # Spawn processes on all connected nodes
     for node <- connected_nodes,
@@ -28,7 +31,9 @@ defmodule Cluster do
   # Raises a runtime error if any node fails to connect.
   defp connect_nodes do
     # Reads the node info from config.exs
-    nodes = Application.get_env(:tsp, :nodes)
+    nodes = get_nodes()
+    # IO.inspect nodes
+
     status = for node <- nodes, do: Node.connect(node)
 
     # Are all nodes connected?

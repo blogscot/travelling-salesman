@@ -24,7 +24,7 @@ defmodule MasterSlave.Tsp do
       |> GeneticAlgorithm.evaluate
 
     distance = calculate_distance(population)
-    IO.puts("Start Distance: #{distance}")
+    # IO.puts("Start Distance: #{distance}")
 
     process_population(population, pool, 1, distance)
   end
@@ -42,7 +42,7 @@ defmodule MasterSlave.Tsp do
     pool |> Enum.map(&stop_worker/1)
   end
 
-  defp process_population(population, pool, generation, distance) do
+  defp process_population(population, pool, generation, _distance) do
     {elite_population, common_population} =
       population
       |> Population.sort
@@ -61,9 +61,9 @@ defmodule MasterSlave.Tsp do
 
     new_distance = calculate_distance(new_population)
 
-    if new_distance != distance do
-      IO.puts("G#{generation} Best Distance: #{distance}")
-    end
+    # if new_distance != distance do
+    #   IO.puts("G#{generation} Best Distance: #{distance}")
+    # end
 
     process_population(new_population, pool, generation + 1, new_distance)
   end
