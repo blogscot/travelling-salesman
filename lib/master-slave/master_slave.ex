@@ -1,4 +1,4 @@
-defmodule MasterSlave.Tsp do
+defmodule Tsp.MasterSlave do
   require Logger
 
   @moduledoc """
@@ -19,12 +19,12 @@ defmodule MasterSlave.Tsp do
   def run do
     pool = Cluster.create_worker_pool(&crossover_population/0)
 
+    # Evaluate the initial population
     population =
       Population.new(@population_size)
       |> GeneticAlgorithm.evaluate
 
     distance = calculate_distance(population)
-    # IO.puts("Start Distance: #{distance}")
 
     process_population(population, pool, 1, distance)
   end
