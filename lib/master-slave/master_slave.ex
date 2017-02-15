@@ -16,12 +16,7 @@ defmodule Tsp.MasterSlave do
   @doc """
   The entry point for the TSP algorithm.
   """
-   def run do
-    population_info = "Population Size: #{@population_size}"
-    crossover_info = "Crossover Rate: #{@crossover_rate}"
-    mutation_info = "Mutation Rate: #{@mutation_rate}"
-    Logger.info("Params: #{population_info}, #{crossover_info} #{mutation_info}")
-
+  def run do
     pool = Cluster.create_worker_pool(&crossover_population/0)
 
     # Evaluate the initial population
@@ -33,6 +28,8 @@ defmodule Tsp.MasterSlave do
 
     process_population(population, pool, 1, distance)
   end
+
+  def log_params, do: {@population_size, @crossover_rate, @mutation_rate}
 
   # Perform crossover and mutation of a sub-population
   defp process_population(_population, pool, generation, distance)

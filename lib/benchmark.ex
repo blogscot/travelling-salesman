@@ -25,6 +25,12 @@ defmodule Benchmark do
     num_workers = Cluster.number_workers
     num_nodes = Cluster.number_nodes
     Logger.info("Test started on #{date_info} using #{num_nodes}x#{num_workers} worker processes")
+
+    {population_size, crossover_rate, mutation_rate} = Tsp.MasterSlave.log_params()
+    population_info = "Population Size: #{population_size}"
+    crossover_info = "Crossover Rate: #{crossover_rate}"
+    mutation_info = "Mutation Rate: #{mutation_rate}"
+    Logger.info("Params: #{population_info}, #{crossover_info} #{mutation_info}")
   end
 
   # Measures the time taken to execute the given function.
