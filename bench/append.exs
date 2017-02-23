@@ -2,17 +2,18 @@ defmodule AppendBench do
   use Benchfella
 
   def my_list, do: for x <- 1..1000, do: [x]
+  @list2 [[1],[2],[3],[4],[5]]
 
   bench "Append to list", [list: my_list()] do
-    [1,2,3,4,5] ++ list
+    @list2 ++ list
   end
 
   bench "Erlang append to list", [list: my_list()] do
-    :lists.append([1,2,3,4,5], list)
+    :lists.append(@list2, list)
   end
 
   bench "Erlang flatten lists", [list: my_list()] do
-    :lists.flatten([1,2,3,4,5], list)
+    :lists.flatten(@list2, list)
   end
 
 end
