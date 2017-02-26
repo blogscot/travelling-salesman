@@ -44,30 +44,46 @@ defmodule MigrationTest do
 
   # Wrap the Island function to send a response to the test process
   def await_elites_process(sender, num_neighbours) do
-    _elites = Island.await_elites(num_neighbours)
-    send sender, {self(), :ok}
+    elites = Island.await_elites(num_neighbours)
+    send sender, {self(), elites: elites}
   end
 
-  test "Worker process receives migration from single neighbour" do
+  test "Worker process expects migration from single neighbour" do
     awaiting_pid = spawn __MODULE__, :await_elites_process, [self(), 1]
     elites_size = 5
     elites = Population.new(elites_size)
 
     send awaiting_pid, {self(), elites: elites}
-    assert_receive({^awaiting_pid, :ok})
+    assert_receive({^awaiting_pid, elites: new_elites})
+    assert length(new_elites) == elites_size
   end
 
-
-  test "Worker process receives migration from two neighbours" do
-    awaiting_pid = spawn __MODULE__, :await_elites_process, [self(), 2]
+  test "Worker process expects migration from two neighbours" do
+    num_neighbours = 2
+    awaiting_pid = spawn __MODULE__, :await_elites_process, [self(), num_neighbours]
     elites_size = 5
     elites = Population.new(elites_size)
 
     # The function under test does not care who the sender is.
     send awaiting_pid, {self(), elites: elites}
-    refute_receive({^awaiting_pid, :ok}, 10)
+    refute_receive({^awaiting_pid, elites: _elites}, 10)
     send awaiting_pid, {self(), elites: elites}
-    assert_receive({^awaiting_pid, :ok})
+    assert_receive({^awaiting_pid, elites: new_elites})
+    assert length(new_elites) == elites_size * num_neighbours
+  end
+
+  test "Worker process expects migration from three neighbours" do
+    num_neighbours = 3
+    awaiting_pid = spawn __MODULE__, :await_elites_process, [self(), num_neighbours]
+    elites_size = 5
+    elites = Population.new(elites_size)
+
+    send awaiting_pid, {self(), elites: elites}
+    send awaiting_pid, {self(), elites: elites}
+    refute_receive({^awaiting_pid, elites: _elites}, 10)
+    send awaiting_pid, {self(), elites: elites}
+    assert_receive({^awaiting_pid, elites: new_elites})
+    assert length(new_elites) == elites_size * num_neighbours
   end
 
 end
