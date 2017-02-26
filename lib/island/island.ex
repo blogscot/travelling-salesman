@@ -82,9 +82,10 @@ defmodule Tsp.Island do
 
     new_general_population =
     if (rem generation, @migration_rate) == 0 do
-      send_elites(pool, elite_population)
+      send_elites(neighbours, elite_population)
       updated_population =
-        integrate_elites(general_population, length(neighbours))
+        await_elites(length(neighbours))
+        |> integrate(general_population)
       IO.puts("#{inspect updated_population}")
     end
 
@@ -99,31 +100,34 @@ defmodule Tsp.Island do
 
 
   # Sends elite members to neighbouring worker processes
-  def send_elites({_master, neighbours}, elite_population) do
-    for worker <- neighbours, do:
-      send worker, {:migrates, elite_population}
+  def send_elites(neighbours, elites) do
+    for neighbour <- neighbours, do:
+      send neighbour, {self(), elites: elites}
   end
 
-  def integrate_elites(population, 0) do
-    population
+  # Merges the new elite population into the general population.
+  # Some members are randomly dropped to maintain constant population size.
+  def integrate(elites, population) when is_list(population) do
+    elites ++ population
     |> Enum.shuffle
-    |> Enum.take(@population_size - @elitism_count)
+    |> Enum.take(length(population))
   end
 
   # Waits for response messages from neighbour processes
-  # which are added to the population. When all the expected
-  # messages have been received the population is resized.
-  def integrate_elites(population, count) do
+  # which are added to the population.
+  def await_elites(count, population \\ [])
+  def await_elites(0, population), do: population
+  def await_elites(count, population) when count > 0 do
     receive do
-      {:migrates, new_elites} ->
-        integrate_elites(population ++ new_elites, count - 1)
+      {_from, elites: elites} when is_list(elites) ->
+        await_elites(count - 1, elites ++ population)
     end
   end
 
 
   # Calculates the shortest distance (using the best candidate solution) for
   # the given population.
-  def calculate_distance(population) do
+  def calculate_distance(population) when is_list(population) do
     population
     |> Population.getFittest
     |> Route.new
