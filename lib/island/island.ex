@@ -1,8 +1,12 @@
 defmodule Tsp.Island do
   require Logger
 
-  @min_distance 90
-  @population_size 10
+  @moduledoc """
+  The main module for the Island model algorithm
+  """
+
+  @min_distance 900
+  @population_size 60
   @crossover_rate 0.95
   @mutation_rate 0.001
   @elitism_count 3
@@ -27,8 +31,11 @@ defmodule Tsp.Island do
     # Wait for a worker to send the final solution
     receive do
       {:distance, distance, generation} ->
-        IO.puts("G#{generation} Best Distance: #{distance}")
+        IO.puts("Complete at generation: #{generation}, distance: #{distance}")
     end
+
+    # Clean up resources
+    pool |> Enum.map(&stop_worker/1)
   end
 
 
@@ -56,18 +63,22 @@ defmodule Tsp.Island do
     process_population(population, {master, neighbours}, 1, distance)
   end
 
+  defp stop_worker(worker_pid) do
+    send(worker_pid, {:done, self()})
+  end
 
   # Replies to master process when a suitable solution has been found
   defp process_population(_population, {master, _neighbours}, generation, distance)
   when (@min_distance >= distance) do
-
     send master, {:distance, distance, generation}
     Logger.info("Test completed after #{generation} generations")
   end
 
 
   # Perform crossover and mutation of a population
-  defp process_population(population, {_, neighbours}=pool, generation, _) do
+  defp process_population(population, {_, neighbours}=pool, generation, _distance) do
+
+    # select elite and non-elite population based on fitness value
     {elite_population, common_population} =
       population
       |> Population.sort
@@ -78,23 +89,26 @@ defmodule Tsp.Island do
       |> GeneticAlgorithm.crossover(@population_size, @crossover_rate, @tournament_size)
       |> GeneticAlgorithm.mutate(@mutation_rate)
 
-    IO.puts("#{inspect general_population}")
-
-    new_general_population =
+    migrated_population =
     if (rem generation, @migration_rate) == 0 do
       send_elites(neighbours, elite_population)
-      updated_population =
-        await_elites(length(neighbours))
-        |> integrate(general_population)
-      IO.puts("#{inspect updated_population}")
+      await_elites(length(neighbours))
+      |> integrate(general_population)
+    else
+      general_population
     end
 
-    IO.write("#{length(new_general_population)}")
+    # update population fitness
     new_population =
-      elite_population ++ new_general_population
+      elite_population ++ migrated_population
       |> GeneticAlgorithm.evaluate
 
     new_distance = calculate_distance(new_population)
+
+    # if new_distance != distance do
+    #   IO.puts("G#{generation} Best Distance: #{distance}")
+    # end
+
     process_population(new_population, pool, generation + 1, new_distance)
   end
 
@@ -121,6 +135,8 @@ defmodule Tsp.Island do
     receive do
       {_from, elites: elites} when is_list(elites) ->
         await_elites(count - 1, elites ++ population)
+      {:done, _from} ->
+        Process.exit(self(), :kill)
     end
   end
 

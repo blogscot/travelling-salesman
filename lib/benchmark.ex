@@ -6,7 +6,7 @@ defmodule Benchmark do
   multiple times, saving the timing results to log file.
   """
 
-  @algorithm &Tsp.MasterSlave.run/0
+  @algorithm &Tsp.Island.run/0
 
   @doc """
   Executes the measure function the number of times given by count.

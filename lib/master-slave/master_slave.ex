@@ -2,7 +2,7 @@ defmodule Tsp.MasterSlave do
   require Logger
 
   @moduledoc """
-  The main module for the Travelling Salesman Problem
+  The main module for the Master-slave model algorithm
   """
 
   @min_distance 900
