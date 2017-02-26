@@ -28,16 +28,27 @@ defmodule Tsp.Island do
       send worker, {:workers, pool, self()}
     end
 
-    # Wait for a worker to send the final solution
+    # Wait for the first worker to send the final solution
     receive do
       {:distance, distance, generation} ->
+        Logger.info("Test completed after #{generation} generations")
         IO.puts("Complete at generation: #{generation}, distance: #{distance}")
     end
 
     # Clean up resources
-    pool |> Enum.map(&stop_worker/1)
+    pool |> Enum.map(fn pid -> Process.exit(pid, :kill) end)
+    flush()  # Clear out any duplicate solutions
   end
 
+  # Borrow the IEx helper function
+  def flush do
+    receive do
+      _msg ->
+        flush()
+    after
+      0 -> :ok
+    end
+  end
 
   # Waits for the worker pool from the master process, and from this
   # calculates this process' neighbours list. Also returns the master
@@ -63,15 +74,10 @@ defmodule Tsp.Island do
     process_population(population, {master, neighbours}, 1, distance)
   end
 
-  defp stop_worker(worker_pid) do
-    send(worker_pid, {:done, self()})
-  end
-
   # Replies to master process when a suitable solution has been found
   defp process_population(_population, {master, _neighbours}, generation, distance)
   when (@min_distance >= distance) do
     send master, {:distance, distance, generation}
-    Logger.info("Test completed after #{generation} generations")
   end
 
 

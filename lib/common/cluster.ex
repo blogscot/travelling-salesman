@@ -23,7 +23,6 @@ defmodule Cluster do
     # Spawn processes on all connected nodes
     for node <- connected_nodes,
       _ <- 1..@number_workers, do: Node.spawn(node, fun)
-
   end
 
 
@@ -32,8 +31,6 @@ defmodule Cluster do
   defp connect_nodes do
     # Reads the node info from config.exs
     nodes = get_nodes()
-    # IO.inspect nodes
-
     status = for node <- nodes, do: Node.connect(node)
 
     # Are all nodes connected?
