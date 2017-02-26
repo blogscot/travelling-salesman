@@ -70,7 +70,7 @@ defmodule Tsp.Island do
       Population.new(@population_size)
       |> GeneticAlgorithm.evaluate()
 
-    distance = calculate_distance(population)
+    distance = Population.calculate_distance(population)
     process_population(population, {master, neighbours}, 1, distance)
   end
 
@@ -109,11 +109,7 @@ defmodule Tsp.Island do
       elite_population ++ migrated_population
       |> GeneticAlgorithm.evaluate
 
-    new_distance = calculate_distance(new_population)
-
-    # if new_distance != distance do
-    #   IO.puts("G#{generation} Best Distance: #{distance}")
-    # end
+    new_distance = Population.calculate_distance(new_population)
 
     process_population(new_population, pool, generation + 1, new_distance)
   end
@@ -141,19 +137,7 @@ defmodule Tsp.Island do
     receive do
       {_from, elites: elites} when is_list(elites) ->
         await_elites(count - 1, elites ++ population)
-      {:done, _from} ->
-        Process.exit(self(), :kill)
     end
-  end
-
-
-  # Calculates the shortest distance (using the best candidate solution) for
-  # the given population.
-  def calculate_distance(population) when is_list(population) do
-    population
-    |> Population.getFittest
-    |> Route.new
-    |> Route.getDistance
   end
 
   @doc """

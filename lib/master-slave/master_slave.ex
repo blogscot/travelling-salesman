@@ -24,7 +24,7 @@ defmodule Tsp.MasterSlave do
       Population.new(@population_size)
       |> GeneticAlgorithm.evaluate
 
-    distance = calculate_distance(population)
+    distance = Population.calculate_distance(population)
 
     process_population(population, pool, 1, distance)
   end
@@ -61,7 +61,7 @@ defmodule Tsp.MasterSlave do
       elite_population ++ new_general_population
       |> GeneticAlgorithm.evaluate
 
-    new_distance = calculate_distance(new_population)
+    new_distance = Population.calculate_distance(new_population)
 
     # if new_distance != distance do
     #   IO.puts("G#{generation} Best Distance: #{distance}")
@@ -103,18 +103,4 @@ defmodule Tsp.MasterSlave do
     end
   end
 
-
-  @doc """
-  Calculates the shortest distance (using the best candidate solution) for
-  the given population.
-
-  Note: function shared with test cases.
-  """
-
-  def calculate_distance(population) do
-    population
-    |> Population.getFittest
-    |> Route.new
-    |> Route.getDistance
-  end
 end

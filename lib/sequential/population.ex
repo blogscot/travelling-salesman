@@ -74,4 +74,17 @@ defmodule Population do
     |> Enum.shuffle
   end
 
+
+  @doc """
+  Calculates the shortest distance (using the best candidate solution) for
+  the given population.
+
+  Note: function shared with test cases.
+  """
+  def calculate_distance(population) do
+    population
+    |> Population.getFittest
+    |> Route.new
+    |> Route.getDistance
+  end
 end
