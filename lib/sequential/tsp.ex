@@ -34,7 +34,7 @@ defmodule Tsp do
   end
 
 
-  defp process_population(population, generation, distance) do
+  defp process_population(population, generation, _distance) do
     {elite_population, common_population} =
       population
       |> Population.sort

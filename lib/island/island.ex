@@ -46,7 +46,7 @@ defmodule Tsp.Island do
       _msg ->
         flush()
     after
-      0 -> :ok
+      10 -> :ok
     end
   end
 
