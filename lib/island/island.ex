@@ -14,6 +14,13 @@ defmodule Tsp.Island do
   @migration_rate 200
 
 
+  #
+  def get_log_params do
+    %{min_distance: @min_distance, population_size: @population_size,
+     crossover_rate: @crossover_rate, mutation_rate: @mutation_rate,
+     elitism_count: @elitism_count, tournament_size: @tournament_size}
+  end
+
   @doc """
   The master process for the Island model.
 

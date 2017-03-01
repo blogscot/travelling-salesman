@@ -12,6 +12,12 @@ defmodule Tsp.MasterSlave do
   @elitism_count 3
   @tournament_size 5
 
+  def get_log_params do
+    %{min_distance: @min_distance, population_size: @population_size,
+     crossover_rate: @crossover_rate, mutation_rate: @mutation_rate,
+     elitism_count: @elitism_count, tournament_size: @tournament_size}
+  end
+
 
   @doc """
   The entry point for the TSP algorithm.
@@ -28,8 +34,6 @@ defmodule Tsp.MasterSlave do
 
     process_population(population, pool, 1, distance)
   end
-
-  def log_params, do: {@population_size, @crossover_rate, @mutation_rate}
 
   # Perform crossover and mutation of a sub-population
   defp process_population(_population, pool, generation, distance)
