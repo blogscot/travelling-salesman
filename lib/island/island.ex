@@ -11,10 +11,9 @@ defmodule Tsp.Island do
   @mutation_rate 0.001
   @elitism_count 3
   @tournament_size 5
-  @migration_rate 200
+  @migration_gap 50
 
 
-  #
   def get_log_params do
     %{min_distance: @min_distance, population_size: @population_size,
      crossover_rate: @crossover_rate, mutation_rate: @mutation_rate,
@@ -103,7 +102,7 @@ defmodule Tsp.Island do
       |> GeneticAlgorithm.mutate(@mutation_rate)
 
     migrated_population =
-    if (rem generation, @migration_rate) == 0 do
+    if (rem generation, @migration_gap) == 0 do
       send_elites(neighbours, elite_population)
       await_elites(length(neighbours))
       |> integrate(general_population)
