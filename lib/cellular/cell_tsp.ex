@@ -33,7 +33,8 @@ defmodule Cellular.Tsp do
     pool = Cluster.create_worker_pool(&mutate_individual/0)
 
     population =
-      Population.new(@population_size)
+      @population_size
+      |> Population.new
       |> GeneticAlgorithm.evaluate
 
     distance = calculate_distance(population)

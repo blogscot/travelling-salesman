@@ -13,9 +13,8 @@ defmodule Tsp.MasterSlave do
   @tournament_size 5
 
   def get_log_params do
-    %{min_distance: @min_distance, population_size: @population_size,
-     crossover_rate: @crossover_rate, mutation_rate: @mutation_rate,
-     elitism_count: @elitism_count, tournament_size: @tournament_size}
+    "Distance: #{@min_distance} Population: #{@population_size}, Crossover #{@crossover_rate}, " <>
+      "Mutation: #{@mutation_rate}, Elitism: #{@elitism_count}, Tournament: #{@tournament_size}"
   end
 
 
@@ -27,7 +26,8 @@ defmodule Tsp.MasterSlave do
 
     # Evaluate the initial population
     population =
-      Population.new(@population_size)
+      @population_size
+      |> Population.new
       |> GeneticAlgorithm.evaluate
 
     distance = Population.calculate_distance(population)

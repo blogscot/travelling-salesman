@@ -17,7 +17,8 @@ defmodule Tsp do
   """
   def run do
     population =
-      Population.new(@population_size)
+      @population_size
+      |> Population.new
       |> GeneticAlgorithm.evaluate
 
     distance = Population.calculate_distance(population)

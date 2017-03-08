@@ -11,13 +11,13 @@ defmodule Tsp.Island do
   @mutation_rate 0.001
   @elitism_count 3
   @tournament_size 5
-  @migration_gap 50
+  @migration_gap 20
 
 
   def get_log_params do
-    %{min_distance: @min_distance, population_size: @population_size,
-     crossover_rate: @crossover_rate, mutation_rate: @mutation_rate,
-     elitism_count: @elitism_count, tournament_size: @tournament_size}
+    "Distance: #{@min_distance} Population: #{@population_size}, Crossover #{@crossover_rate}, " <>
+      "Mutation: #{@mutation_rate}, Elitism: #{@elitism_count}, Tournament: #{@tournament_size}, " <>
+      "Migration: #{@migration_gap}"
   end
 
   @doc """
@@ -42,7 +42,7 @@ defmodule Tsp.Island do
     end
 
     # Clean up resources
-    pool |> Enum.map(fn pid -> Process.exit(pid, :kill) end)
+    _ = pool |> Enum.map(fn pid -> Process.exit(pid, :kill) end)
     flush()  # Clear out any duplicate solutions
   end
 
@@ -73,7 +73,8 @@ defmodule Tsp.Island do
     {master, neighbours} = find_neighbours()
 
     population =
-      Population.new(@population_size)
+      @population_size
+      |> Population.new
       |> GeneticAlgorithm.evaluate()
 
     distance = Population.calculate_distance(population)
@@ -88,7 +89,7 @@ defmodule Tsp.Island do
 
 
   # Perform crossover and mutation of a population
-  defp process_population(population, {_, neighbours}=pool, generation, _distance) do
+  defp process_population(population, {_, neighbours} = pool, generation, _distance) do
 
     # select elite and non-elite population based on fitness value
     {elite_population, common_population} =
@@ -104,7 +105,10 @@ defmodule Tsp.Island do
     migrated_population =
     if (rem generation, @migration_gap) == 0 do
       send_elites(neighbours, elite_population)
-      await_elites(length(neighbours))
+
+      neighbours
+      |> length
+      |> await_elites
       |> integrate(general_population)
     else
       general_population
@@ -154,7 +158,7 @@ defmodule Tsp.Island do
   """
   def calculate_neighbours(workers) when is_list(workers) do
     # find current pid index in list of worker pids
-    index = Enum.find_index(workers, &(&1==self()))
+    index = Enum.find_index(workers, &(&1 == self()))
 
     len = length(workers)
     previous = rem (index - 1) + len, len

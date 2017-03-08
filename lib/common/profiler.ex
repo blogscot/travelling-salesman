@@ -12,6 +12,6 @@ defmodule Profiler do
   def run do
     records = do_analyze()
     total_percent = Enum.reduce(records, 0.0, &(&1.percent + &2))
-    IO.inspect "total = #{total_percent}"
+    IO.puts "total = #{inspect total_percent}"
   end
 end
