@@ -73,77 +73,9 @@ defmodule Tsp.Cellular do
       |> GeneticAlgorithm.evaluate()
 
     distance = Population.calculate_distance(population)
-    process_population(population, {master, neighbours}, 1, distance)
+    Tsp.Island.process_population(population, {master, neighbours}, 1, distance)
   end
 
-  # Replies to master process when a suitable solution has been found
-  defp process_population(_population, {master, _neighbours}, generation, distance)
-  when (@min_distance >= distance) do
-    send master, {:distance, distance, generation}
-  end
-
-
-  # Perform crossover and mutation of a population
-  defp process_population(population, {_, neighbours} = pool, generation, _distance) do
-
-    # select elite and non-elite population based on fitness value
-    {elite_population, common_population} =
-      population
-      |> Population.sort
-      |> Enum.split(@elitism_count)
-
-    general_population =
-      common_population
-      |> GeneticAlgorithm.crossover(@population_size, @crossover_rate, @tournament_size)
-      |> GeneticAlgorithm.mutate(@mutation_rate)
-
-    migrated_population =
-    if (rem generation, @migration_gap) == 0 do
-      send_elites(neighbours, elite_population)
-
-      neighbours
-      |> length
-      |> await_elites
-      |> integrate(general_population)
-    else
-      general_population
-    end
-
-    # update population fitness
-    new_population =
-      elite_population ++ migrated_population
-      |> GeneticAlgorithm.evaluate
-
-    new_distance = Population.calculate_distance(new_population)
-
-    process_population(new_population, pool, generation + 1, new_distance)
-  end
-
-
-  # Sends elite members to neighbouring worker processes
-  def send_elites(neighbours, elites) do
-    for neighbour <- neighbours, do:
-      send neighbour, {self(), elites: elites}
-  end
-
-  # Merges the new elite population into the general population.
-  # Some members are randomly dropped to maintain constant population size.
-  def integrate(elites, population) when is_list(population) do
-    elites ++ population
-    |> Enum.shuffle
-    |> Enum.take(length(population))
-  end
-
-  # Waits for response messages from neighbour processes
-  # which are added to the population.
-  def await_elites(count, population \\ [])
-  def await_elites(0, population), do: population
-  def await_elites(count, population) when count > 0 do
-    receive do
-      {_from, elites: elites} when is_list(elites) ->
-        await_elites(count - 1, elites ++ population)
-    end
-  end
 
   @doc """
   Returns the values neighbouring the given value in array

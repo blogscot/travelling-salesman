@@ -79,14 +79,14 @@ defmodule Tsp.Island do
   end
 
   # Replies to master process when a suitable solution has been found
-  defp process_population(_population, {master, _neighbours}, generation, distance)
+  def process_population(_population, {master, _neighbours}, generation, distance)
   when (@min_distance >= distance) do
     send master, {:distance, distance, generation}
   end
 
 
   # Perform crossover and mutation of a population
-  defp process_population(population, {_, neighbours} = pool, generation, _distance) do
+  def process_population(population, {_, neighbours} = pool, generation, _distance) do
 
     # select elite and non-elite population based on fitness value
     {elite_population, common_population} =
