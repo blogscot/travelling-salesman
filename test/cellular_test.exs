@@ -1,7 +1,7 @@
 
 defmodule CellularTest do
   use ExUnit.Case
-  doctest Cellular
+  doctest Tsp.Cellular
 
   def dummy_worker do
     receive do
