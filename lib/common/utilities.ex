@@ -18,4 +18,15 @@ defmodule Utilities do
   defp do_divide([l|ls], [o|o1], o2), do: do_divide(ls, o1, [[l|o]|o2])
   defp do_divide(ls, [], o2), do: do_divide(ls, o2, [])
 
+
+  # Clears all mailbox messages for the calling process
+  def flush do
+    receive do
+      _msg ->
+        flush()
+    after
+      10 -> :ok
+    end
+  end
+
 end
