@@ -63,7 +63,7 @@ defmodule MultiArray do
   Wraps invalid, out of bounds, array indices so that they always
   specify a valid array element.
   """
-  def sanatise({row, col}, arr) when is_list(arr) do
+  def sanitise({row, col}, arr) when is_list(arr) do
     {row_bound, col_bound} = MultiArray.get_dimensions(arr)
     {rem((row + row_bound), row_bound), rem((col + col_bound), col_bound)}
   end

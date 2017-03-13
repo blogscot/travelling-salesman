@@ -75,12 +75,12 @@ defmodule MultiArrayTest do
   test "An array index is never out of bounds" do
     arr = 1..12 |> Enum.to_list |> from_list(3,4)
 
-    assert {0,0} |> sanatise(arr) == {0,0}
-    assert {1,1} |> sanatise(arr) == {1,1}
-    assert {3,4} |> sanatise(arr) == {0,0}
-    assert {3,7} |> sanatise(arr) == {0,3}
-    assert {-1,3} |> sanatise(arr) == {2,3}
-    assert {2,-3} |> sanatise(arr) == {2,1}
+    assert {0,0} |> sanitise(arr) == {0,0}
+    assert {1,1} |> sanitise(arr) == {1,1}
+    assert {3,4} |> sanitise(arr) == {0,0}
+    assert {3,7} |> sanitise(arr) == {0,3}
+    assert {-1,3} |> sanitise(arr) == {2,3}
+    assert {2,-3} |> sanitise(arr) == {2,1}
   end
 
 end

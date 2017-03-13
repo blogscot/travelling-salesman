@@ -158,7 +158,7 @@ defmodule Tsp.Cellular do
         offsets
         |> Enum.map(fn {r, c} ->
           {r + row, c + col}
-          |> MultiArray.sanatise(workers)
+          |> MultiArray.sanitise(workers)
           |> MultiArray.get_value(workers)
         end)
         |> Enum.uniq
