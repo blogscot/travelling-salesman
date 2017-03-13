@@ -4,19 +4,18 @@ defmodule Tsp.Cellular do
   @moduledoc """
   A Cellular solution to the Travelling Salesman problem.
 
-  This cellular solution is largely based on Island Model algorithm, with
-  the difference being the cellular algorithm communicates its immediately adjacent
-  neighbouring processes in a grid pattern (i.e. positions north, east, south,
-  and west).
+  This cellular solution is largely based on the Island Model algorithm, with
+  the difference being the cellular algorithm communicates with its cellular
+  neighbour, based on a grid pattern (i.e. positions north, east, south, and
+  west).
   """
-
   @min_distance 900
   @population_size 60
   @crossover_rate 0.95
   @mutation_rate 0.001
   @elitism_count 3
   @tournament_size 5
-  @migration_gap 20
+  @migration_gap 10
 
   def get_log_params do
     "Distance: #{@min_distance} Population: #{@population_size}, Crossover #{@crossover_rate}, " <>
@@ -30,8 +29,8 @@ defmodule Tsp.Cellular do
   Spawns and initialisses the worker processes then waits until a worker
   reports that it has found a suitable candidate solution.
   """
-  def run(row, col) do
-    pool = Cluster.create_worker_pool(fn -> start_worker({row, col}) end)
+  def run(num_workers, {row, col}) do
+    pool = Cluster.create_worker_pool(num_workers, fn -> start_worker({row, col}) end)
 
     # initialise each worker
     for worker <- pool do
@@ -47,18 +46,9 @@ defmodule Tsp.Cellular do
 
     # Clean up resources
     _ = pool |> Enum.map(fn pid -> Process.exit(pid, :kill) end)
-    flush()  # Clear out any duplicate solutions
+    Utilities.flush()  # Clear out any duplicate solutions
   end
 
-  # Clears all mailbox messages for the calling process
-  def flush do
-    receive do
-      _msg ->
-        flush()
-    after
-      10 -> :ok
-    end
-  end
 
   # Waits for the worker pool from the master process, and from this
   # calculates this process' neighbours list. Also returns the master

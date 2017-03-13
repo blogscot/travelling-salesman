@@ -21,8 +21,8 @@ defmodule Tsp.MasterSlave do
   @doc """
   The entry point for the TSP algorithm.
   """
-  def run do
-    pool = Cluster.create_worker_pool(&crossover_population/0)
+  def run(num_workers) do
+    pool = Cluster.create_worker_pool(num_workers, &crossover_population/0)
 
     # Evaluate the initial population
     population =

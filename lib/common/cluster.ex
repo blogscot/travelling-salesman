@@ -4,10 +4,6 @@ defmodule Cluster do
   Functions for managing a cluster of distributed machines
   """
 
-  # @number_workers :erlang.system_info(:logical_processors)
-  @number_workers 2
-
-  def number_workers, do: @number_workers
   def get_nodes, do: Application.get_env(:tsp, :nodes)
   def number_nodes, do: length(get_nodes())
 
@@ -15,14 +11,14 @@ defmodule Cluster do
   Creates a pool of worker processes on local machine and remote machines
   using the passed function.
   """
-  def create_worker_pool(fun) do
+  def create_worker_pool(number_workers, fun) do
 
     # Before spawning worker processes we need to be connected!
     connected_nodes = connect_nodes()
 
     # Spawn processes on all connected nodes
     for node <- connected_nodes,
-      _ <- 1..@number_workers, do: Node.spawn(node, fun)
+      _ <- 1..number_workers, do: Node.spawn(node, fun)
   end
 
 

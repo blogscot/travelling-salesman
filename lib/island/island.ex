@@ -32,8 +32,8 @@ defmodule Tsp.Island do
   Spawns and initialisses the worker processes then waits until a worker
   reports that it has found a suitable candidate solution.
   """
-  def run do
-    pool = Cluster.create_worker_pool(&start_worker/0)
+  def run(num_workers) do
+    pool = Cluster.create_worker_pool(num_workers, &start_worker/0)
 
     # initialise each worker
     for worker <- pool do
@@ -49,18 +49,9 @@ defmodule Tsp.Island do
 
     # Clean up resources
     _ = pool |> Enum.map(fn pid -> Process.exit(pid, :kill) end)
-    flush()  # Clear out any duplicate solutions
+    Utilities.flush()  # Clear out any duplicate solutions
   end
 
-  # Clears all mailbox messages for the calling process
-  def flush do
-    receive do
-      _msg ->
-        flush()
-    after
-      10 -> :ok
-    end
-  end
 
   # Waits for the worker pool from the master process, and from this
   # calculates this process' neighbours list. Also returns the master
