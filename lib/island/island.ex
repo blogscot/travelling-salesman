@@ -3,6 +3,12 @@ defmodule Tsp.Island do
 
   @moduledoc """
   The main module for the Island model algorithm
+
+  Each island process works on its own population to find the solution specified by
+  the minimum distance value. Occasionally (see Migration Gap) an island's best candidates
+  are migrated between neighbouring islands.
+  When an island finds a solution with the required fitness value it informs the master
+  process, which in turn reports the solution and cleans up the remaining resources.
   """
 
   @min_distance 900
@@ -46,7 +52,7 @@ defmodule Tsp.Island do
     flush()  # Clear out any duplicate solutions
   end
 
-  # Borrow the IEx helper function
+  # Clears all mailbox messages for the calling process
   def flush do
     receive do
       _msg ->
