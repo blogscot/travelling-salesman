@@ -5,17 +5,18 @@ defmodule Benchmark do
   Performs basic benchmarking activities, i.e. running the TSP algorithms
   multiple times, saving the timing results to log file.
   """
-  @algorithm_under_test "Cellular Algorithm: "
+  @algorithm_under_test "Island"
 
   # @algorithm  &Tsp.MasterSlave.run/0
   # @log_params Tsp.MasterSlave.get_log_params()
 
-  # @algorithm  &Tsp.Island.run/0
-  # @log_params Tsp.Island.get_log_params()
+  # @algorithm (fn -> Tsp.Island.run(num_workers) end)
+  @log_params Tsp.Island.get_log_params()
 
-  # Cellular model config {2,2} the num_workers should be set to 2.
+  # For cellular model config {2,2} the num_workers should be set to 2 as 2 processes are
+  # spawned per node and the grid contains 4 processes in total.
   # @algorithm (fn -> Tsp.Cellular.run(num_workers, {2,2}) end)
-  @log_params Tsp.Cellular.get_log_params()
+  # @log_params Tsp.Cellular.get_log_params()
 
   @doc """
   Executes the measure function the number of times given by count.
@@ -24,14 +25,15 @@ defmodule Benchmark do
     display_start_message(num_workers)
 
     for run <- 1..count do
-      Logger.info("Run #{run}: The algorithm ran in #{measure(fn -> Tsp.Cellular.run(num_workers, {2,3}) end)} seconds.")
+      # Logger.info("Run #{run}: The algorithm ran in #{measure(fn -> Tsp.Cellular.run(num_workers, {2,3}) end)} seconds.")
+      Logger.info("Run #{run}: The algorithm ran in #{measure(fn -> Tsp.Island.run(num_workers) end)} seconds.")
     end
   end
 
   defp display_start_message(num_workers) do
     {{year, month, day}, _} = :calendar.local_time
     num_nodes = Cluster.number_nodes
-    Logger.info("#{@algorithm_under_test} test, started on #{day}/#{month}/#{year} " <>
+    Logger.info("#{@algorithm_under_test} algorithm test, started on #{day}/#{month}/#{year} " <>
       "using #{num_nodes}x#{num_workers} worker processes")
     Logger.info(@log_params)
   end
