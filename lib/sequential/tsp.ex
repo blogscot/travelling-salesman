@@ -6,14 +6,14 @@ defmodule Tsp do
 
   @min_distance 900
   @population_size 60
-  @crossover_rate 0.9
+  @crossover_rate 0.95
   @mutation_rate 0.001
   @elitism_count 3
   @tournament_size 5
 
 
   @doc """
-  The entry point for the TSP algorithm.
+  The entry point for the Sequential TSP algorithm.
   """
   def run do
     population =

@@ -5,7 +5,7 @@ defmodule MultiArray do
   """
 
   @doc """
-  Constructs a multi-dimensional array using the given dimensions.
+  Constructs a multi-array using the given dimensions.
   """
   def from_list(arr, row, col) when is_list(arr) do
     unless (length(arr) == row * col) and
@@ -17,7 +17,7 @@ defmodule MultiArray do
   end
 
   @doc """
-  Converts the multi-dimensional array into a arr.
+  Converts the multi-dimensional array back into a list.
   """
   def to_list(arr) when is_list(arr) do
     Enum.concat(arr)
@@ -25,7 +25,7 @@ defmodule MultiArray do
 
   @doc """
   Returns the {row, col} position of the first encountered given value
-  in the array.
+  in the multi-array.
   """
   def find_index(arr, value) when is_list(arr) and length(arr) > 0 do
       case Enum.find_index(to_list(arr), &(&1==value)) do
@@ -51,7 +51,7 @@ defmodule MultiArray do
   end
 
   @doc """
-  Returns the column size of the array.
+  Returns the row and column sizes of the multi-array.
   """
   def get_dimensions(arr) when is_list(arr) do
     row = arr |> length
