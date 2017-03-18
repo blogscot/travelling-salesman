@@ -26,7 +26,7 @@ defmodule Tsp.Cellular do
   @doc """
   The master process for the Cellular model algorithm.
 
-  Spawns and initialisses the worker processes then waits until a worker
+  Spawns and initialisses the worker process pool then waits until a worker
   reports that it has found a suitable candidate solution.
   """
   def run(num_workers, {row, col}) do
@@ -50,9 +50,9 @@ defmodule Tsp.Cellular do
   end
 
 
-  # Waits for the worker pool from the master process, and from this
-  # calculates this process' neighbours list. Also returns the master
-  # pid.
+  # Waits for the worker pool message from the master process. From this
+  # calculates this process' neighbours list.
+  # Returns this neighbour list and the master pid.
   defp find_neighbours({row, col}) when row > 0 and row > 0 do
     receive do
       {:workers, worker_pool, from} ->
@@ -79,7 +79,7 @@ defmodule Tsp.Cellular do
 
   @doc """
   Returns the values neighbouring the given value in array
-  or nil if the value is not found.
+  (or nil if the value is not found).
   Neighbours are in north, east, south, west grid positions.
   """
   def calculate_neighbours(workers) when is_list(workers) do

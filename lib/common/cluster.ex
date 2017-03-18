@@ -8,8 +8,8 @@ defmodule Cluster do
   def number_nodes, do: length(get_nodes())
 
   @doc """
-  Creates a pool of worker processes on local machine and remote machines
-  using the passed function.
+  Creates a pool of worker processes on the connected nodes.
+  Each node executes the given function.
   """
   def create_worker_pool(number_workers, fun) do
 
@@ -22,7 +22,8 @@ defmodule Cluster do
   end
 
 
-  # Connects to remote nodes defined in the config file.
+  # Connects to nodes as defined in the application's config file.
+  # These may be local or remote nodes depending on the given IP address.
   # Raises a runtime error if any node fails to connect.
   defp connect_nodes do
     # Reads the node info from config.exs
