@@ -1,5 +1,6 @@
-defmodule Tsp.Island do
+defmodule Tsp.Island.Async do
   require Logger
+  alias Tsp.Island
 
   @moduledoc """
   The main module for the Island model algorithm
@@ -53,21 +54,9 @@ defmodule Tsp.Island do
   end
 
 
-  # Waits for the worker pool from the master process, and from this
-  # calculates this process' neighbours list. Also returns the master
-  # pid.
-  def find_neighbours() do
-    receive do
-      {:workers, worker_pool, from} ->
-        neighbours = calculate_neighbours(worker_pool)
-        {from, neighbours}
-    end
-  end
-
-
   # Starts the worker process
   defp start_worker() do
-    {master, neighbours} = find_neighbours()
+    {master, neighbours} = Island.find_neighbours()
 
     population =
       @population_size
@@ -99,17 +88,15 @@ defmodule Tsp.Island do
       |> GeneticAlgorithm.crossover(@population_size, @crossover_rate, @tournament_size)
       |> GeneticAlgorithm.mutate(@mutation_rate)
 
-    migrated_population =
     if (rem generation, @migration_gap) == 0 do
-      send_elites(neighbours, elite_population)
+      Island.send_elites(neighbours, elite_population)
+    end
 
+    migrated_population =
       neighbours
       |> length
       |> await_elites
-      |> integrate(general_population)
-    else
-      general_population
-    end
+      |> Island.integrate(general_population)
 
     # update population fitness
     new_population =
@@ -121,51 +108,19 @@ defmodule Tsp.Island do
     process_population(new_population, pool, generation + 1, new_distance)
   end
 
-
-  # Sends elite members to neighbouring worker processes
-  def send_elites(neighbours, elites) do
-    for neighbour <- neighbours, do:
-      send neighbour, {self(), elites: elites}
-  end
-
-  # Merges the new elite population into the general population.
-  # Some members are randomly dropped to maintain constant population size.
-  def integrate(elites, population) when is_list(population) do
-    elites ++ population
-    |> Enum.shuffle
-    |> Enum.take(length(population))
-  end
-
-  # Waits for response messages from neighbour processes
-  # which are added to the population.
+  # Process any received migration messages (up to a maximum
+  # number given by count) from the neighbouring processes.
+  # This is a non-blocking function.
   def await_elites(count, population \\ [])
   def await_elites(0, population), do: population
   def await_elites(count, population) when count > 0 do
     receive do
       {_from, elites: elites} when is_list(elites) ->
         await_elites(count - 1, elites ++ population)
-    end
-  end
-
-  @doc """
-  Returns the neighbouring process pids.
-
-  Given an ordered list of pids the neighbours are the ones
-  immediately before and after the current pid.
-  """
-  def calculate_neighbours(workers) when is_list(workers) do
-    # find current pid index in list of worker pids
-    index = Enum.find_index(workers, &(&1 == self()))
-
-    len = length(workers)
-    previous = rem (index - 1) + len, len
-    next = rem (index + 1), len
-    case len do
-      1 -> []
-      2 ->
-        [workers |> Enum.at(next)]
-      _ ->
-        [workers |> Enum.at(previous), workers |> Enum.at(next)]
+    after
+      0 ->
+        # if mailbox empty, return current population
+        await_elites(0, population)
     end
   end
 

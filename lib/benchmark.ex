@@ -22,11 +22,20 @@ defmodule Benchmark do
   Executes the Island Model algorithm using the given number of workers.
   The algorithm is repeated n times, specified by the count parameter.
   """
-  def run_island(num_workers, count \\ 30) do
-    display_start_message("Island", num_workers, Tsp.Island.get_log_params())
+  def run_island(num_workers, async? \\ false, count \\ 30) do
+    if async? do
+      display_start_message("Island (Async)", num_workers, Tsp.Island.Async.get_log_params())
+    else
+      display_start_message("Island", num_workers, Tsp.Island.Async.get_log_params())
+    end
 
     for run <- 1..count do
-      Logger.info("Run #{run}: The algorithm ran in #{measure(fn -> Tsp.Island.run(num_workers) end)} seconds.")
+      case async? do
+        true ->
+          Logger.info("Run #{run}: The algorithm ran in #{measure(fn -> Tsp.Island.Async.run(num_workers) end)} seconds.")
+        _ ->
+          Logger.info("Run #{run}: The algorithm ran in #{measure(fn -> Tsp.Island.run(num_workers) end)} seconds.")
+      end
     end
   end
 
