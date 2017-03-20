@@ -49,11 +49,20 @@ defmodule Benchmark do
   Therefore, the number of workers in the grid should equal four. E.g. a {2,2}
   grid has valid dimensions.
   """
-  def run_cellular(num_workers, {row, col}, count \\ 30) do
-    display_start_message("Cellular", num_workers, Tsp.Cellular.get_log_params())
+  def run_cellular(num_workers, {row, col}, async? \\ false, count \\ 30) do
+    if async? do
+      display_start_message("Cellular (Async)", num_workers, Tsp.Cellular.Async.get_log_params())
+    else
+      display_start_message("Cellular", num_workers, Tsp.Cellular.get_log_params())
+    end
 
     for run <- 1..count do
-      Logger.info("Run #{run}: The algorithm ran in #{measure(fn -> Tsp.Cellular.run(num_workers, {row,col}) end)} seconds.")
+      case async? do
+        true ->
+          Logger.info("Run #{run}: The algorithm ran in #{measure(fn -> Tsp.Cellular.Async.run(num_workers, {row,col}) end)} seconds.")
+        _ ->
+          Logger.info("Run #{run}: The algorithm ran in #{measure(fn -> Tsp.Cellular.run(num_workers, {row,col}) end)} seconds.")
+      end
     end
   end
 

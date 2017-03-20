@@ -1,12 +1,14 @@
-defmodule Tsp.Cellular do
+defmodule Tsp.Cellular.Async do
   require Logger
+  alias Tsp.Cellular
 
   @moduledoc """
-  A Cellular solution to the Travelling Salesman problem.
+  An asynchronous version of the cellular model for the Travelling Salesman
+  problem.
 
   This cellular solution is largely based on the Island Model algorithm, the
-  difference being the cellular algorithm communicates with its cellular
-  neighbours according to the grid positions: north, east, south, and west.
+  difference being this algorithm communicates with its cellular neighbours
+  according to the grid positions: north, east, south, and west.
   """
 
   @min_distance 900
@@ -57,7 +59,7 @@ defmodule Tsp.Cellular do
     receive do
       {:workers, worker_pool, from} ->
         workers = worker_pool |> MultiArray.from_list(row, col)
-        neighbours = calculate_neighbours(workers)
+        neighbours = Cellular.calculate_neighbours(workers)
         {from, neighbours}
     end
   end
@@ -73,28 +75,7 @@ defmodule Tsp.Cellular do
       |> GeneticAlgorithm.evaluate()
 
     distance = Population.calculate_distance(population)
-    Tsp.Island.process_population(population, {master, neighbours}, 1, distance)
-  end
-
-
-  @doc """
-  Returns the values neighbouring the given value in array
-  (or nil if the value is not found).
-  Neighbours are in north, east, south, west grid positions.
-  """
-  def calculate_neighbours(workers) when is_list(workers) do
-    offsets = [{-1, 0}, {0, 1}, {1, 0}, {0, -1}]
-    case MultiArray.find_index(workers, self()) do
-      nil -> nil
-      {row, col} ->
-        offsets
-        |> Enum.map(fn {r, c} ->
-          {r + row, c + col}
-          |> MultiArray.sanitise(workers)
-          |> MultiArray.get_value(workers)
-        end)
-        |> Enum.uniq
-    end
+    Tsp.Island.Async.process_population(population, {master, neighbours}, 1, distance)
   end
 
 end
