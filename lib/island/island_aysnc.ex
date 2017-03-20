@@ -88,15 +88,16 @@ defmodule Tsp.Island.Async do
       |> GeneticAlgorithm.crossover(@population_size, @crossover_rate, @tournament_size)
       |> GeneticAlgorithm.mutate(@mutation_rate)
 
+    migrated_population =
     if (rem generation, @migration_gap) == 0 do
       Island.send_elites(neighbours, elite_population)
+
+      await_elites()
+      |> Island.integrate(general_population)
+    else
+      general_population
     end
 
-    migrated_population =
-      neighbours
-      |> length
-      |> await_elites
-      |> Island.integrate(general_population)
 
     # update population fitness
     new_population =
@@ -108,19 +109,17 @@ defmodule Tsp.Island.Async do
     process_population(new_population, pool, generation + 1, new_distance)
   end
 
-  # Process any received migration messages (up to a maximum
-  # number given by count) from the neighbouring processes.
+  # Process all received migration messages from the neighbouring
+  # processes until the process mailbox is empty.
   # This is a non-blocking function.
-  def await_elites(count, population \\ [])
-  def await_elites(0, population), do: population
-  def await_elites(count, population) when count > 0 do
+  def await_elites(population \\ []) do
     receive do
       {_from, elites: elites} when is_list(elites) ->
-        await_elites(count - 1, elites ++ population)
+        await_elites(elites ++ population)
     after
       0 ->
         # if mailbox empty, return current population
-        await_elites(0, population)
+        population
     end
   end
 
