@@ -15,16 +15,27 @@ defmodule Individual do
   Returns the chromosome with an uninitialised fitness variable
   """
   def new(length) when length > 0 do
-    chromosome =
       0..length - 1
       |> Enum.to_list
-      |> Array.from_list
-
-    %Individual{chromosome: chromosome}
+      |> (fn list -> from_list({list, nil}) end).()
   end
 
   def offspring(length) when length > 0 do
     %Individual{chromosome: Array.new(length)}
+  end
+
+  @doc """
+  Creates an individual from a list.
+  """
+  def from_list({chromosome, fitness}) when is_list(chromosome) do
+    %Individual{chromosome: chromosome |> Array.from_list, fitness: fitness}
+  end
+
+  @doc """
+  Returns the chromosome contents of an individual as a list.
+  """
+  def to_list(%Individual{chromosome: chromosome, fitness: fitness}) do
+    {chromosome |> Array.to_list, fitness}
   end
 
 

@@ -26,6 +26,23 @@ defmodule Population do
 
 
   @doc """
+  Converts a population into a list of chromosomes.
+  """
+  def to_list(population) when is_list(population) do
+    population |> Enum.map(&Individual.to_list/1)
+  end
+
+
+  @doc """
+  Converts a list of chromosomes into a standard population
+  structure.
+  """
+  def from_list(chromosomes) when is_list(chromosomes) do
+    chromosomes |> Enum.map(&Individual.from_list/1)
+  end
+
+
+  @doc """
   Updates the individual in a population at the given position.
 
   This is currently only used in test and may be deleted.

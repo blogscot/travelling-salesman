@@ -78,11 +78,12 @@ defmodule Tsp.MasterSlave do
     receive do
       {:population, population, from} ->
         send(from, {:crossedover,
-                    population
+                    population |> Population.from_list
                     |> GeneticAlgorithm.crossover(@population_size,
                     @crossover_rate,
                     @tournament_size)
                     |> GeneticAlgorithm.mutate(@mutation_rate)
+                    |> Population.to_list
                    })
         crossover_population()
       {:done, _from} ->
@@ -92,7 +93,7 @@ defmodule Tsp.MasterSlave do
 
   # Sends sub-population to worker process.
   defp start_worker({population, worker_pid}) do
-    send(worker_pid, {:population, population, self()})
+    send(worker_pid, {:population, population |> Population.to_list, self()})
   end
 
   defp stop_worker(worker_pid) do
@@ -103,7 +104,7 @@ defmodule Tsp.MasterSlave do
   defp await_result(_) do
     receive do
       {:crossedover, population} ->
-        population
+        population |> Population.from_list
     end
   end
 

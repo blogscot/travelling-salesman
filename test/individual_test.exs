@@ -12,6 +12,27 @@ defmodule IndividualTest do
     assert Individual.getGene(bob, 99) == 99
   end
 
+  test "An individual can be created using a list" do
+    chromosome = 0..19 |> Enum.to_list
+    bob = Individual.from_list({chromosome, nil})
+
+    assert bob == Individual.new(20)
+  end
+
+  test "An individual can be expressed as a list" do
+    chromosome = 0..19 |> Enum.to_list
+    bob = Individual.new(20)
+    {bob_list, _fitness} = bob |> Individual.to_list
+
+    assert bob_list == chromosome
+  end
+
+  test "An individual can be converted to a list and back" do
+    bob = Individual.new(60)
+
+    assert bob |> Individual.to_list |> Individual.from_list == bob
+  end
+
   test "A chromosome contains expected values" do
     %Individual{chromosome: bob} = Individual.new(100)
     for x <- 0..map_size(bob)-1, do:

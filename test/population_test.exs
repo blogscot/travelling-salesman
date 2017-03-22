@@ -10,6 +10,27 @@ defmodule PopulationTest do
     assert Population.new(20, 10)
   end
 
+  test "A population can be converted into a list of chromosome lists"  do
+    population = Population.new(10)
+    chromosomes = population |> Population.to_list
+
+    assert chromosomes |> List.first == {[0,1,2,3,4,5,6,7,8,9], nil}
+    assert chromosomes |> length == 10
+  end
+
+  test "A list of chromsome lists can be converted into a standard population" do
+    population = Population.new(60)
+
+    assert population |> Population.to_list |> Population.from_list == population
+  end
+
+  test "A list converted to a population can be converted back" do
+    my_list = for _ <- 0..9, do: {[0,1,2,3,4,5,6,7,8,9], nil}
+    new_population = my_list |> Population.from_list
+
+    assert new_population |> Population.to_list == my_list
+  end
+
   test "Population members have the expected size" do
     expected_size = 20
     population = Population.new(expected_size) |> Array.from_list
