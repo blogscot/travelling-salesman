@@ -27,6 +27,8 @@ defmodule Profiler do
   defp eprof, do:
     profile do: run_test()
 
-  # def run_test, do: Benchmark.run_island 2, false, 1
-  defp run_test, do: Benchmark.run_sequential_tsp 1
+    # defp run_test, do: Tsp.run
+    # defp run_test, do: Tsp.MasterSlave.run 2
+    def run_test, do: Tsp.Island.run 2
 end
+ 
