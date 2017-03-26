@@ -6,6 +6,22 @@ defmodule Benchmark do
   multiple times, saving the timing results to log file.
   """
 
+  def bench_ms(max_limit \\ 2) do
+    for n <- 1..max_limit, do: run_master_slave(n)
+  end
+
+  @doc """
+  Executes the sequential TSP algorithm
+  The algorithm is repeated n times, specified by the count parameter.
+  """
+  def run_sequential(count \\ 30) do
+    display_start_message("Sequential TSP", 1, Tsp.get_log_params())
+
+    for run <- 1..count do
+      Logger.info("Run #{run}: The algorithm ran in #{measure(&Tsp.run/0)} seconds.")
+    end
+  end
+
   @doc """
   Executes the Master Slave Model algorithm using the given number of workers.
   The algorithm is repeated n times, specified by the count parameter.
