@@ -39,10 +39,8 @@ defmodule Tsp.MasterSlave do
   defp process_population(_population, pool, generation, distance)
     when @min_distance >= distance do
 
-    IO.puts("Stopped after #{generation} generations.")
-    IO.puts("Best Distance: #{distance}")
-
     Logger.info("Test completed after #{generation} generations")
+    IO.puts("Complete at generation: #{generation}, distance: #{distance}")
 
     # Clean up resources
     pool |> Enum.map(&stop_worker/1)
