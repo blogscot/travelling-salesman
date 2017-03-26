@@ -23,9 +23,10 @@ defmodule Profiler do
     IO.puts "total = #{inspect total_percent}"
   end
 
-  @doc "analyze with profile macro"
-  def eprof, do:
+  # "analyze with profile macro"
+  defp eprof, do:
     profile do: run_test()
 
-  def run_test, do: Benchmark.run_island 2, false, 1
+  # def run_test, do: Benchmark.run_island 2, false, 1
+  defp run_test, do: Benchmark.run_sequential_tsp 1
 end
