@@ -1,4 +1,5 @@
 defmodule Tsp do
+  require Logger
 
   @moduledoc """
   The main module for the Travelling Salesman Problem
@@ -7,10 +8,14 @@ defmodule Tsp do
   @min_distance 900
   @population_size 60
   @crossover_rate 0.95
-  @mutation_rate 0.001
+  @mutation_rate 0.005
   @elitism_count 3
   @tournament_size 5
 
+  def get_log_params do
+    "Distance: #{@min_distance} Population: #{@population_size}, Crossover #{@crossover_rate}, " <>
+      "Mutation: #{@mutation_rate}, Elitism: #{@elitism_count}, Tournament: #{@tournament_size}"
+  end
 
   @doc """
   The entry point for the Sequential TSP algorithm.
@@ -30,8 +35,9 @@ defmodule Tsp do
 
   defp process_population(_population, generation, distance)
     when @min_distance >= distance do
-      IO.puts("Stopped after #{generation} generations.")
-      IO.puts("Best Distance: #{distance}")
+
+    Logger.info("Test completed after #{generation} generations")
+    IO.puts("Complete at generation: #{generation}, distance: #{distance}")
   end
 
 
@@ -53,11 +59,6 @@ defmodule Tsp do
       |> GeneticAlgorithm.evaluate
 
     new_distance = Population.calculate_distance(new_population)
-
-    # if new_distance != distance do
-    #   IO.puts("G#{generation} Best Distance: #{distance}")
-    # end
-
     process_population(new_population, generation + 1, new_distance)
   end
 
