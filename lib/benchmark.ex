@@ -6,8 +6,27 @@ defmodule Benchmark do
   multiple times, saving the timing results to log file.
   """
 
-  def bench_ms(max_limit \\ 2) do
-    for n <- 1..max_limit, do: run_master_slave(n)
+  @doc """
+  Runs the TSP parallel and distributed algorithms over the given range of
+  processor cores.
+
+  Example:
+    Benchmark.bench(%{algorithm: :master_slave}, 1, 4)
+
+  The will run the master_slave algorithm over one to four cores on the machines
+  specified in the config.exs file.
+  """
+  def bench(%{algorithm: name}, start, finish) do
+    case name do
+      :master_slave ->
+        for n <- start..finish, do: run_master_slave(n)
+      :island ->
+        for n <- start..finish, do: run_island(n)
+      :cellular ->
+        for n <- start..finish, do: run_cellular(n)
+      _ ->
+       IO.puts "Invalid algorithm type given. Choices are [:master_slave, :island, :cellular]."
+    end
   end
 
   @doc """
