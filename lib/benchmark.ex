@@ -23,7 +23,8 @@ defmodule Benchmark do
       :island ->
         for n <- start..finish, do: run_island(n)
       :cellular ->
-        for n <- start..finish, do: run_cellular(n)
+        num_nodes = Cluster.get_nodes |> length
+        for n <- start..finish, do: run_cellular(n, {num_nodes, n})
       _ ->
        IO.puts "Invalid algorithm type given. Choices are [:master_slave, :island, :cellular]."
     end
