@@ -65,10 +65,6 @@ defmodule Tsp.MasterSlave do
 
     new_distance = Population.calculate_distance(new_population)
 
-    # if new_distance != distance do
-    #   IO.puts("G#{generation} Best Distance: #{distance}")
-    # end
-
     process_population(new_population, pool, generation + 1, new_distance)
   end
 
@@ -80,7 +76,7 @@ defmodule Tsp.MasterSlave do
                     |> GeneticAlgorithm.crossover(@population_size,
                     @crossover_rate,
                     @tournament_size)
-                    |> GeneticAlgorithm.mutate(@mutation_rate)
+                    |> GeneticAlgorithm.mutate_optimised(@mutation_rate)
                     |> Population.to_list
                    })
         crossover_population()

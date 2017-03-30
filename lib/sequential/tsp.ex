@@ -52,13 +52,14 @@ defmodule Tsp do
       |> GeneticAlgorithm.crossover(@population_size,
                                     @crossover_rate,
                                     @tournament_size)
-      |> GeneticAlgorithm.mutate(@mutation_rate)
+      |> GeneticAlgorithm.mutate_optimised(@mutation_rate)
 
     new_population =
       elite_population ++ new_general_population
       |> GeneticAlgorithm.evaluate
 
     new_distance = Population.calculate_distance(new_population)
+
     process_population(new_population, generation + 1, new_distance)
   end
 

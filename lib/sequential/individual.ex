@@ -39,6 +39,8 @@ defmodule Individual do
   end
 
 
+  def getFitness(%Individual{fitness: fitness}), do: fitness
+
   @doc """
   Retrieves the gene at the specified offset from the chromosome
   """

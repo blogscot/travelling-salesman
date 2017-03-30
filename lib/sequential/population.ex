@@ -81,6 +81,25 @@ defmodule Population do
     |> Enum.at(offset)
   end
 
+  @doc """
+  Returns the population's maximum fitness value.
+  """
+  def maxFitness(population) when is_list(population) do
+    population
+    |> Enum.map(& &1.fitness)
+    |> Enum.max
+  end
+
+  @doc """
+  Returns the population's average fitness value.
+  """
+  def avgFitness(population) when is_list(population) do
+    population
+    |> Enum.map(& &1.fitness)
+    |> Enum.sum
+    |> (fn total -> total / length(population) end).()
+  end
+
 
   @doc """
   Shuffles the population of candidate solutions.

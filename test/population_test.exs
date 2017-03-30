@@ -109,4 +109,23 @@ defmodule PopulationTest do
     assert fitness2 === 0.01028730494505273
     assert fitness3 === 0.008489805347921537
   end
+
+  test "A population provides basic statistics" do
+    population = Population.new(3) |> Array.from_list
+
+    # Make the individuals different
+    bob = population[1].chromosome |> Individual.setGene(2, 4)
+    alice = population[2].chromosome |> Individual.setGene(2, 8)
+
+    changed_pop =
+      population
+      |> Population.setIndividual(%Individual{chromosome: bob}, 1)
+      |> Population.setIndividual(%Individual{chromosome: alice}, 2)
+
+    # Evaluate each individual's fitness
+    new_pop = GeneticAlgorithm.evaluate(changed_pop)
+
+    assert new_pop |> Population.maxFitness == 0.010499504733954064
+    assert new_pop |> Population.avgFitness == 0.009758871675642775
+  end
 end

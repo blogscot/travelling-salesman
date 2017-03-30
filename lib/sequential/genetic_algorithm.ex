@@ -124,14 +124,41 @@ defmodule GeneticAlgorithm do
 
   @doc """
   Mutates members of the population according to the mutation rate.
-
-  Note: the first n fittest members are allowed into the new population
-  without mutation, where n = elitismCount.
   """
   def mutate(population, mutationRate) do
     population
     |> Enum.map(fn ind ->
       ind |> Individual.mutate(mutationRate)
+    end)
+  end
+
+
+  @doc """
+  Mutates members of the population according to the mutation rate.
+  The mutation rate is optimised such that it is scaled up when an
+  individual's fitness is less than the population average, and
+  down when greater than the average.
+  """
+  def mutate_optimised(population, mutationRate) do
+    pop = GeneticAlgorithm.evaluate(population)
+    max = Population.maxFitness(pop)
+    avg = Population.avgFitness(pop)
+
+    pop
+    |> Enum.map(fn ind ->
+      fit = Individual.getFitness(ind)
+
+      ratio =
+        cond do
+        fit < avg and max > avg and fit < max ->
+          (max - avg) / (max - fit)  # scale down
+        fit > avg and max > fit and avg < max ->
+          (max - fit) / (max - avg)  # scale up
+        true ->
+          1
+      end
+
+      ind |> Individual.mutate(ratio * mutationRate)
     end)
   end
 
