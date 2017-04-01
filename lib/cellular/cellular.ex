@@ -26,7 +26,7 @@ defmodule Tsp.Cellular do
   @doc """
   The master process for the Cellular model algorithm.
 
-  Spawns and initialisses the worker process pool then waits until a worker
+  Spawns and initialises the worker process pool then waits until a worker
   reports that it has found a suitable candidate solution.
   """
   def run(num_workers, {row, col}) do
@@ -94,6 +94,8 @@ defmodule Tsp.Cellular do
           |> MultiArray.get_value(workers)
         end)
         |> Enum.uniq
+        # If an array only has a single row you need to remove yourself!
+        |> Enum.filter(&(&1!=self()))
     end
   end
 

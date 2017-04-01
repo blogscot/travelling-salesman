@@ -20,6 +20,11 @@ defmodule CellularTest do
     end
   end
 
+  # Spawn a dummy process
+  def spawn_dummy do
+    spawn __MODULE__, :dummy_worker, []
+  end
+
   # Waits for the neighbours results from the worker process
   def wait_for(worker) do
     receive do
@@ -35,15 +40,34 @@ defmodule CellularTest do
 
   test "A value in a 2x2 matrix has two neighbours" do
     worker1 = spawn __MODULE__, :test_worker, []
-    pid2 = spawn __MODULE__, :dummy_worker, []
-    pid3 = spawn __MODULE__, :dummy_worker, []
-    pid4 = spawn __MODULE__, :dummy_worker, []
+    pid2 = spawn_dummy()
+    pid3 = spawn_dummy()
+    pid4 = spawn_dummy()
 
     arr = [worker1, pid2, pid3, pid4,]
     |> MultiArray.from_list(2,2)
 
     send worker1, {:calculate, arr, self()}
     assert wait_for(worker1) == [pid3, pid2]
+  end
+
+  #     0  1  2  3  4  5
+  #  |------------------
+  # 0|  1  2  3  4  5  6
+
+  test "An array with one row has two neighbours" do
+    worker1 = spawn __MODULE__, :test_worker, []
+    pid2 = spawn_dummy()
+    pid3 = spawn_dummy()
+    pid4 = spawn_dummy()
+    pid5 = spawn_dummy()
+    pid6 = spawn_dummy()
+
+    arr = [worker1, pid2, pid3, pid4, pid5, pid6]
+    |> MultiArray.from_list(1,6)
+
+    send worker1, {:calculate, arr, self()}
+    assert wait_for(worker1) == [pid2, pid6]
   end
 
   #     0  1  2  3
@@ -53,18 +77,18 @@ defmodule CellularTest do
   # 2|  9 10 11 12
 
   test "A value in a 3x4 matrix has four neighbours" do
-    pid1 = spawn __MODULE__, :dummy_worker, []
-    pid2 = spawn __MODULE__, :dummy_worker, []
+    pid1 = spawn_dummy()
+    pid2 = spawn_dummy()
     worker3 = spawn __MODULE__, :test_worker, []
-    pid4 = spawn __MODULE__, :dummy_worker, []
-    pid5 = spawn __MODULE__, :dummy_worker, []
-    pid6 = spawn __MODULE__, :dummy_worker, []
-    pid7 = spawn __MODULE__, :dummy_worker, []
-    pid8 = spawn __MODULE__, :dummy_worker, []
-    pid9 = spawn __MODULE__, :dummy_worker, []
-    pid10 = spawn __MODULE__, :dummy_worker, []
-    pid11 = spawn __MODULE__, :dummy_worker, []
-    pid12 = spawn __MODULE__, :dummy_worker, []
+    pid4 = spawn_dummy()
+    pid5 = spawn_dummy()
+    pid6 = spawn_dummy()
+    pid7 = spawn_dummy()
+    pid8 = spawn_dummy()
+    pid9 = spawn_dummy()
+    pid10 = spawn_dummy()
+    pid11 = spawn_dummy()
+    pid12 = spawn_dummy()
 
     arr = [
       pid1, pid2, worker3, pid4, pid5, pid6,
@@ -83,22 +107,22 @@ defmodule CellularTest do
   # 3| 13 14 15 16
 
   test "An value in a 4x4 matrix has four neighbours" do
-    pid1 = spawn __MODULE__, :dummy_worker, []
-    pid2 = spawn __MODULE__, :dummy_worker, []
-    pid3 = spawn __MODULE__, :dummy_worker, []
-    pid4 = spawn __MODULE__, :dummy_worker, []
-    pid5 = spawn __MODULE__, :dummy_worker, []
-    pid6 = spawn __MODULE__, :dummy_worker, []
-    pid7 = spawn __MODULE__, :dummy_worker, []
-    pid8 = spawn __MODULE__, :dummy_worker, []
-    pid9 = spawn __MODULE__, :dummy_worker, []
-    pid10 = spawn __MODULE__, :dummy_worker, []
+    pid1 = spawn_dummy()
+    pid2 = spawn_dummy()
+    pid3 = spawn_dummy()
+    pid4 = spawn_dummy()
+    pid5 = spawn_dummy()
+    pid6 = spawn_dummy()
+    pid7 = spawn_dummy()
+    pid8 = spawn_dummy()
+    pid9 = spawn_dummy()
+    pid10 =spawn_dummy()
     worker11 = spawn __MODULE__, :test_worker, []
-    pid12 = spawn __MODULE__, :dummy_worker, []
-    pid13 = spawn __MODULE__, :dummy_worker, []
-    pid14 = spawn __MODULE__, :dummy_worker, []
-    pid15 = spawn __MODULE__, :dummy_worker, []
-    pid16 = spawn __MODULE__, :dummy_worker, []
+    pid12 = spawn_dummy()
+    pid13 = spawn_dummy()
+    pid14 = spawn_dummy()
+    pid15 = spawn_dummy()
+    pid16 = spawn_dummy()
 
     arr = [
       pid1, pid2, pid3, pid4,
