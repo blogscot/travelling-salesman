@@ -9,7 +9,7 @@ defmodule Tsp do
   @population_size 60
   @crossover_rate 0.95
   @mutation_rate 0.005
-  @elitism_count 3
+  @elitism_count 4
   @tournament_size 5
 
   def get_log_params do
@@ -42,13 +42,14 @@ defmodule Tsp do
 
 
   defp process_population(population, generation, _distance) do
-    {elite_population, common_population} =
+    sorted_population =
+    {elite_population, _common_population} =
       population
       |> Population.sort
       |> Enum.split(@elitism_count)
 
     new_general_population =
-      common_population
+      sorted_population
       |> GeneticAlgorithm.crossover(@population_size,
                                     @crossover_rate,
                                     @tournament_size)

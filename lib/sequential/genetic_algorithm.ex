@@ -102,12 +102,15 @@ defmodule GeneticAlgorithm do
   by selecting two parents which then reproduce to create a new offspring,
   containing genetic material from both parents.
   """
-  def crossover(population, chromosome_size, crossoverRate, tournamentSize) do
+  def crossover({elites, commoners}, chromosome_size, crossoverRate, tournamentSize) do
+    total_population = elites ++ commoners
 
-    population
+    # Each non-elite individual has a chance of crossover
+    # with a member of the entire population
+    commoners
     |> Enum.map(fn parent1 ->
       if crossoverRate > :rand.uniform do
-        parent2 = selectParent(population, tournamentSize)
+        parent2 = selectParent(total_population, tournamentSize)
 
         start_finish =
           Enum.min_max([:rand.uniform(chromosome_size) - 1,
@@ -148,14 +151,13 @@ defmodule GeneticAlgorithm do
     |> Enum.map(fn ind ->
       fit = Individual.getFitness(ind)
 
+      # In the initial population all individuals are create equal, therefore
+      # so (unfortunately) the maximum and average fitnesses will be the same.
       ratio =
-        cond do
-        fit < avg and max > avg and fit < max ->
-          (max - avg) / (max - fit)  # scale down
-        fit > avg and max > fit and avg < max ->
-          (max - fit) / (max - avg)  # scale up
-        true ->
-          1
+      if max == fit or max == avg do
+        1
+      else
+        (max - fit) / (max - avg)
       end
 
       ind |> Individual.mutate(ratio * mutationRate)

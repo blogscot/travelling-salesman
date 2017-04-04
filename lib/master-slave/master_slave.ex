@@ -56,7 +56,8 @@ defmodule Tsp.MasterSlave do
       common_population
       |> Utilities.divide(length(pool))
       |> Enum.zip(Stream.cycle(pool))
-      |> Enum.map(&start_worker/1)
+      |> Enum.map(fn zipped_pair ->
+        start_worker(zipped_pair, elite_population) end)
       |> Enum.flat_map(&await_result/1)
 
     new_population =
@@ -72,12 +73,11 @@ defmodule Tsp.MasterSlave do
     receive do
       {:population, population, from} ->
         send(from, {:crossedover,
-                    population |> Population.from_list
+                    population
                     |> GeneticAlgorithm.crossover(@population_size,
                     @crossover_rate,
                     @tournament_size)
                     |> GeneticAlgorithm.mutate_optimised(@mutation_rate)
-                    |> Population.to_list
                    })
         crossover_population()
       {:done, _from} ->
@@ -86,8 +86,8 @@ defmodule Tsp.MasterSlave do
   end
 
   # Sends sub-population to worker process.
-  defp start_worker({population, worker_pid}) do
-    send(worker_pid, {:population, population |> Population.to_list, self()})
+  defp start_worker({population, worker_pid}, elites) do
+    send(worker_pid, {:population, {elites, population}, self()})
   end
 
   defp stop_worker(worker_pid) do
@@ -98,7 +98,7 @@ defmodule Tsp.MasterSlave do
   defp await_result(_) do
     receive do
       {:crossedover, population} ->
-        population |> Population.from_list
+        population
     end
   end
 

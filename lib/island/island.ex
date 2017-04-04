@@ -88,16 +88,17 @@ defmodule Tsp.Island do
   # Perform crossover and mutation of a population
   def process_population(population, {_, neighbours} = pool, generation, _distance) do
 
-    # select elite and non-elite population based on fitness value
-    {elite_population, common_population} =
+    # split elite and non-elite individuals based on fitness value
+    sorted_population =
+    {elite_population, _common_population} =
       population
       |> Population.sort
       |> Enum.split(@elitism_count)
 
     general_population =
-      common_population
+      sorted_population
       |> GeneticAlgorithm.crossover(@population_size, @crossover_rate, @tournament_size)
-      |> GeneticAlgorithm.mutate(@mutation_rate)
+      |> GeneticAlgorithm.mutate_optimised(@mutation_rate)
 
     migrated_population =
     if (rem generation, @migration_gap) == 0 do

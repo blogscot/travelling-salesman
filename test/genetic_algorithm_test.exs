@@ -116,21 +116,37 @@ end
   end
 
   test "Population members are unchanged when crossover rate is zero", context do
+    elitism_count = 3
     population = context[:population]
     chromosome_size = context[:population_size]
-    new_population =
-      GeneticAlgorithm.crossover(population, chromosome_size, 0, 3)
 
-    assert population |> Population.sort == new_population |> Population.sort
+    sorted_population =
+    {_elite_population, common_population} =
+      population
+      |> Population.sort
+      |> Enum.split(elitism_count)
+
+    new_population =
+      GeneticAlgorithm.crossover(sorted_population, chromosome_size, 0, 3)
+
+    assert common_population |> Population.sort == new_population |> Population.sort
   end
 
   test "Population members are changed when crossover rate is one", context do
+    elitism_count = 3
     population = context[:population]
     chromosome_size = context[:population_size]
-    new_population =
-      GeneticAlgorithm.crossover(population, chromosome_size, 1, 3)
 
-    refute population == new_population
+    sorted_population =
+    {_elite_population, common_population} =
+      population
+      |> Population.sort
+      |> Enum.split(elitism_count)
+
+    new_population =
+      GeneticAlgorithm.crossover(sorted_population, chromosome_size, 1, 3)
+
+    refute common_population |> Population.sort == new_population |> Population.sort
   end
 
 end
